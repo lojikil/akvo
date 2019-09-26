@@ -30,7 +30,22 @@ class FunctionCallAST(AST):
         self.symbolic = symbolic
 
     def to_sexpr(self):
-        pass
+        ret = []
+
+        if self.symbolic:
+            ret.append("symbolic-call")
+        else:
+            ret.append("call")
+
+        self.append(self.name)
+
+        if self.returntype is None:
+            ret.append("::pure-symbolic")
+        else:
+            ret.append("::{0}".format(self.returntype.__name__))
+
+        ret.extend([x.to_sexpr() for x in self.params])
+        return "(" + " ".join(ret) + ")"
 
     def to_dexpr(self):
         pass
@@ -42,7 +57,7 @@ class VariableDecAST(AST):
         if value is None:
             self.value = ValueAST(None)
             self.symbolic = True
-            self.vtype = None
+            self.vtype = vtype
         else:
             self.value = value
             self.vtype = vtype
@@ -61,7 +76,7 @@ class VariableDecAST(AST):
         if self.vtype is None:
             ret.append("::pure-symbolic")
         else:
-            ret.append("::{0}".format(self.vtype))
+            ret.append("::{0}".format(self.vtype.__name__))
 
         # we technically can have Variables with symbolic values
         # basically we don't worry about that so much here...
@@ -121,7 +136,15 @@ class IfAST(AST):
         self.elsebranch = elsebranch
 
     def to_sexpr(self):
-        pass
+        ret = ["if"]
+
+        ret.append(condition.to_sexpr())
+        ret.append(thenbranch.to_sexpr())
+
+        if self.elsebranch is not None:
+            ret.append(elsebranch.to_sepxr())
+
+        return "(" + " ".join(ret) + ")"
 
     def to_dexpr(self):
         pass
@@ -174,8 +197,19 @@ class EvalEnv(object):
         self.parent = parent
 
 
-def ast_eval(o, env):
+class Eval(object):
+    def  __init__(self, asts, env):
+        pass
+
+
+class ControlFlowGraph(object):
+    def __init__(self, asts, env):
+        pass
+
+
+class SExpressionReader(object):
     pass
 
-def ast_read(src):
+
+class DExpressionReader(object):
     pass
