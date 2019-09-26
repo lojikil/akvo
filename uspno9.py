@@ -1,3 +1,5 @@
+import uuid
+
 class AST(object):
     pass
 
@@ -37,30 +39,76 @@ class FunctionCallAST(AST):
 class VariableDecAST(AST):
     def __init__(self, name, value=None, vtype=None, symbolic=False):
         self.name = name
-        self.value = value
-        self.vtype = returntype
-        self.symbolic = symbolic
+        if value is None:
+            self.value = ValueAST(None)
+            self.symbolic = True
+            self.vtype = None
+        else:
+            self.value = value
+            self.vtype = vtype
+            self.symbolic = symbolic
 
     def to_sexpr(self):
-        pass
+        ret = []
+        if self.symbolic:
+            ret.append("define-symbolic")
+        else:
+            ret.append("define")
+
+        ret.append(self.name)
+
+        # use Bigloo-style type annotations
+        if self.vtype is None:
+            ret.append("::pure-symbolic")
+        else:
+            ret.append("::{0}".format(self.vtype))
+
+        # we technically can have Variables with symbolic values
+        # basically we don't worry about that so much here...
+        if self.symbolic:
+            ret.append(str(self.value.tag))
+        else:
+            ret.append(self.value.to_sexpr())
+
+        return "(" + " ".join(ret) + ")"
 
     def to_dexpr(self):
         pass
 
 
 class ValueAST(AST):
-    def __init__(self, vtype, value=None, symbolic=False, constraint=None):
+    def __init__(self, vtype, value=None, symbolic=False,
+                 constraint=None, trace=None):
         self.vtype = vtype
+        self.tag = uuid.uuid4()
         if value is None:
             self.value = None
             self.symbolic = True
         else:
             self.value = value
-            self.symbolic = True
+            self.symbolic = False
         self.constraint = constraint
+        self.trace = trace
 
     def to_sexpr(self):
-        pass
+        ret = []
+
+        if self.symbolic:
+            ret.append("symbolic-value")
+            ret.append(str(self.tag))
+        else:
+            ret.append("value")
+            ret.append(str(self.value))
+
+        if self.constraint is not None:
+            ret.append("constraint:")
+            ret.append(self.constraint)
+
+        if self.trace is not None:
+            ret.append("trace:")
+            ret.append(self.trace)
+
+        return "(" + " ".join(ret) + ")"
 
     def to_dexpr(self):
         pass
