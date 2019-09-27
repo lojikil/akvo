@@ -1,10 +1,13 @@
 import uuid
 
+
 class AST(object):
     pass
 
+
 class FunctionAST(AST):
-    def __init__(self, name, params=None, body=None, returntype=None, symbolic=False):
+    def __init__(self, name, params=None, body=None,
+                 returntype=None, symbolic=False):
         self.name = name
         self.params = params
         self.returntype = returntype
@@ -189,7 +192,7 @@ class ForAST(AST):
 
 
 class CondAST(AST):
-    def  __init__(self, condition, cases, thens, base=None, basethen=None):
+    def __init__(self, condition, cases, thens, base=None, basethen=None):
         self.condition = condition
         self.cases = cases
         self.thens = thens
@@ -276,7 +279,7 @@ class EvalEnv(object):
 
 
 class Eval(object):
-    def  __init__(self, asts, env):
+    def __init__(self, asts, env):
         pass
 
 
