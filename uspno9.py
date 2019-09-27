@@ -37,7 +37,7 @@ class FunctionCallAST(AST):
         else:
             ret.append("call")
 
-        self.append(self.name)
+        ret.append(self.name)
 
         if self.returntype is None:
             ret.append("::pure-symbolic")
@@ -138,11 +138,11 @@ class IfAST(AST):
     def to_sexpr(self):
         ret = ["if"]
 
-        ret.append(condition.to_sexpr())
-        ret.append(thenbranch.to_sexpr())
+        ret.append(self.condition.to_sexpr())
+        ret.append(self.thenbranch.to_sexpr())
 
         if self.elsebranch is not None:
-            ret.append(elsebranch.to_sepxr())
+            ret.append(self.elsebranch.to_sexpr())
 
         return "(" + " ".join(ret) + ")"
 
@@ -156,7 +156,12 @@ class WhileAST(AST):
         self.body = body
 
     def to_sexpr(self):
-        pass
+        ret = ["while"]
+
+        ret.append(self.condition.to_sexpr())
+        ret.append(self.body.to_sexpr())
+
+        return "(" + " ".join(ret) + ")"
 
     def to_dexpr(self):
         pass
@@ -170,7 +175,14 @@ class ForAST(AST):
         self.body = body
 
     def to_sexpr(self):
-        pass
+        ret = ["for"]
+
+        ret.append(self.init.to_sexpr())
+        ret.append(self.condition.to_sexpr())
+        ret.append(self.increment.to_sexpr())
+        ret.append(self.body.to_sexpr())
+
+        return "(" + " ".join(ret) + ")"
 
     def to_dexpr(self):
         pass
@@ -186,6 +198,72 @@ class CondAST(AST):
 
     def to_sexpr(self):
         pass
+
+    def to_dexpr(self):
+        pass
+
+
+class BeginAST(AST):
+    def __init__(self, body):
+        self.body = body
+
+    def to_sexpr(self):
+        ret = ["begin"]
+
+        ret.extend([x.to_sexpr() for x in self.body])
+
+        return "(" + " ".join(ret) + ")"
+
+    def to_dexpr(self):
+        pass
+
+
+class ExplicitBeginAST(AST):
+    # this is meant to be subtly different
+    # from the above, insofar as there are
+    # times when we absolutely want to encode
+    # a `begin` and never remove them, whereas
+    # the above AST may be removed on output
+    # at times
+    def __init__(self, body):
+        self.body = body
+
+    def to_sexpr(self):
+        ret = ["begin"]
+
+        ret.extend([x.to_sexpr() for x in self.body])
+
+        return "(" + " ".join(ret) + ")"
+
+    def to_dexpr(self):
+        pass
+
+
+class VarRefAST(AST):
+    def __init__(self, variable, vtype=None, scope=None, symbolic=False):
+        # technically, we're losing the trace here with a
+        # variable ref...
+        self.variable = variable
+        self.vtype = vtype
+        self.scope = scope
+        self.symbolic = symbolic
+
+    def to_sexpr(self):
+        ret = []
+
+        if self.symbolic:
+            ret.append("symbolic-variable")
+        else:
+            ret.append("variable")
+
+        ret.append(self.variable)
+
+        if self.vtype is not None:
+            ret.append("::{0}".format(self.vtype.__name__))
+        else:
+            ret.append("::pure-symbolic")
+
+        return "(" + " ".join(ret) + ")"
 
     def to_dexpr(self):
         pass
