@@ -19,7 +19,35 @@ class FunctionAST(AST):
             self.symbolic = symbolic
 
     def to_sexpr(self):
-        pass
+        ret = []
+
+        if self.symbolic:
+            ret.append("define-symbolic-function")
+        else:
+            ret.append("define-function")
+
+        ret.append(self.name)
+
+        if self.vtype is not None:
+            ret.append("::{0}".format(self.vtype.__name__))
+        elif self.symbolic:
+            # here, we know that vtype is None and
+            # we have a symbolic function, so we can
+            # safely assume that the type can be refined
+            # and is symbolic currently
+            self.append("::pure-symbolic")
+        else:
+            self.append("::void")
+
+        if self.params is None:
+            ret.append("()")
+        else:
+            ret.append("(")
+            ret.extend([x.to_sexpr() for x in self.params])
+            ret.append(")")
+
+        ret.extend([x.to_sexpr() for x in self.body])
+        return "(" + " ".join(ret) + ")"
 
     def to_dexpr(self):
         pass
@@ -117,6 +145,11 @@ class ValueAST(AST):
         else:
             ret.append("value")
             ret.append(str(self.value))
+
+        if self.vtype is not None:
+            ret.append("::{0}".format(self.vtype.__name__))
+        else:
+            ret.append("::pure-symbolic")
 
         if self.constraint is not None:
             ret.append("constraint:")
