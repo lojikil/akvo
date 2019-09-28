@@ -18,6 +18,7 @@ This is meant to be a test bed for exploring ideas, rather than an industrial-qu
 - automatic deobfuscation of malware, akin to automatic exploit generation
 - a framework like [Facebook's pfff](https://github.com/facebookarchive/pfff) for control-flow graphs, source to source translation, &c.
 - the basis of something like ["Static analysis at scale at Instagram"](https://instagram-engineering.com/static-analysis-at-scale-an-instagram-story-8f498ab71a0c)
+- the ability to provide ["fixes" to code, like this tweet](https://twitter.com/moyix/status/1177384798727204864?s=20) automatically [paper link](https://srg.doc.ic.ac.uk/files/papers/loops-pldi-19.pdf)
 
 This will also be the basis of my talk at [GrrCon](http://grrcon.com/presentations/#lojikil).
 

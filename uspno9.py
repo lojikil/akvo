@@ -86,11 +86,14 @@ class VariableDecAST(AST):
     def __init__(self, name, value=None, vtype=None, symbolic=False):
         self.name = name
         if value is None:
-            self.value = ValueAST(None)
+            self.value = ValueAST(vtype)
             self.symbolic = True
             self.vtype = vtype
         else:
-            self.value = value
+            if type(value) is ValueAST:
+                self.value = value
+            else:
+                self.value = ValueAST(vtype, value=value)
             self.vtype = vtype
             self.symbolic = symbolic
 
