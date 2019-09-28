@@ -127,14 +127,20 @@ class ValueAST(AST):
                  constraint=None, trace=None):
         self.vtype = vtype
         self.tag = uuid.uuid4()
+
         if value is None:
-            self.value = None
+            self.value = self.tag
             self.symbolic = True
         else:
             self.value = value
             self.symbolic = False
+
         self.constraint = constraint
-        self.trace = trace
+
+        if trace is None:
+            self.trace = [str(self.tag)]
+        else:
+            self.trace = trace
 
     def to_sexpr(self):
         ret = []
@@ -157,13 +163,84 @@ class ValueAST(AST):
 
         if self.trace is not None:
             ret.append("trace:")
-            ret.append(self.trace)
+            ret.append(" ".join(self.trace))
 
         return "(" + " ".join(ret) + ")"
 
     def to_dexpr(self):
         pass
 
+    # need helper methods & mechanisms for modeling
+    # lists, sets, dicts, tuples as both concrete
+    # and symbolic values
+
+    @staticmethod
+    def new_symbolic_bool():
+        res = ValueAST(vtype=bool, symbolic=True)
+        return res
+
+    @staticmethod
+    def new_symbolic_integer():
+        res = ValueAST(vtype=int, symbolic=True)
+        return res
+
+    @staticmethod
+    def new_symbolic_string():
+        res = ValueAST(vtype=str, symbolic=True)
+        return res
+
+    @staticmethod
+    def new_symbolic_float():
+        res = ValueAST(vtype=float, symbolic=True)
+        return res
+
+    @staticmethod
+    def new_integer(value):
+        res = ValueAST(vtype=int, value=value)
+        return res
+
+    @staticmethod
+    def new_bool(value):
+        res = ValueAST(vtype=bool, value=value)
+        return res
+
+    @staticmethod
+    def new_string(value):
+        return ValueAST(vtype=str, value=value)
+
+    @staticmethod
+    def new_float(value):
+        return ValueAST(vtype=float, value=value)
+
+    def __lt__(self, other):
+        pass
+
+    def __gt__(self, other):
+        pass
+
+    def __le__(self, other):
+        pass
+
+    def __ge__(self, other):
+        pass
+
+    def __ne__(self, other):
+        pass
+
+    def __eq__(self, other):
+        pass
+
+    def __add__(self, other):
+        pass
+
+    def __radd__(self, other):
+        pass
+
+    def __sub__(self, other):
+        pass
+
+    def __rsub__(self, other):
+        pass
 
 class IfAST(AST):
     def __init__(self, condition, thenbranch, elsebranch=None):
