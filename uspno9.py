@@ -123,6 +123,12 @@ class VariableDecAST(AST):
 
 
 class ValueAST(AST):
+    # I can see two mechanisms for supporting radically
+    # different value styles:
+    # - a plugin arch, wherein you can register a function
+    #   to handle an operation (for example, JSAdd)
+    # - just creating a subclass of ValueAST for that language
+    #   (for example, JSValueAST)
     def __init__(self, vtype, value=None, symbolic=False,
                  constraint=None, trace=None):
         self.vtype = vtype
@@ -241,6 +247,7 @@ class ValueAST(AST):
 
     def __rsub__(self, other):
         pass
+
 
 class IfAST(AST):
     def __init__(self, condition, thenbranch, elsebranch=None):
