@@ -238,6 +238,50 @@ class ValueAST(AST):
         return ValueAST(vtype=float, value=value)
 
     def __lt__(self, other):
+        # NOTE so reading the SAGE paper, we see that we want at least
+        # one run to gather constraints of the program, and then we
+        # make another pass to negate those constraints. So we may want
+        # to change how we return ForkValues here, because we may want
+        # to note what the path constraint is, and then we can just
+        # return that the constraint here is that they are equal...
+
+        rv = ValueAST(bool)
+
+        if self.symbolic is False and type(other) is not ValueAST:
+            rv.value = self.value < other
+            rv.trace = ["(", self.trace, ") < ", other]
+            return rv
+        elif (not self.symbolic and
+              type(other) is ValueAST and
+              not other.symbolic):
+            rv.value = self.value < other.value
+            rv.trace = ["(", self.trace, ") < (", other.trace, ")"]
+            return rv
+
+        # ok, so we're here; that means either self or other
+        # was symbolic, meaning we need to return a symbolic
+        # Boolean set, aka a ForkValue
+
+        lhs = rv
+        rhs = ValueAST.new_symbolic_bool()
+        lhs.symbolic = True
+        lhs.value = lhs.tag
+
+        if not self.symbolic:
+            lhs.trace = ["(", self.trace, ") < (", other.trace, ")"]
+            rhs.trace = ["(", self.trace, ") >= (", other.trace, ")"]
+        else:
+            # self itself (lol) is symbolic, so we have to take a little
+            # more care to see what other is.
+            if type(other) is not ValueAST:
+                lhs.trace = ["(", self.trace, ") < (", other, ")"]
+                rhs.trace = ["(", self.trace, ") >= (", other, ")"]
+            else:
+                lhs.trace = ["(", self.trace, ") < (", other.trace, ")"]
+                rhs.trace = ["(", self.trace, ") >= (", other.trace, ")"]
+
+        return ForkValueAST(lhs, rhs)
+
         pass
 
     def __gt__(self, other):
@@ -266,9 +310,9 @@ class ValueAST(AST):
             rv.value = self.value == other
             rv.trace = ["(", self.trace, ") == ", other]
             return rv
-        elif not self.symbolic and \
-             type(other) is ValueAST and \
-             not other.symbolic:
+        elif (not self.symbolic and
+              type(other) is ValueAST and
+              not other.symbolic):
             rv.value = self.value == other.value
             rv.trace = ["(", self.trace, ") == (", other.trace, ")"]
             return rv
