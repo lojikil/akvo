@@ -146,6 +146,12 @@ class ValueAST(AST):
     #   to handle an operation (for example, JSAdd)
     # - just creating a subclass of ValueAST for that language
     #   (for example, JSValueAST)
+    # - Actually, there is a THIRD idea: instead of overriding
+    #   how *value* works, we add functions within the *evaluator*
+    #   and use *that* to call specific functions. For example, we
+    #   may have a `(call + ::int ...)` on some code. The `call`
+    #   system then looks up `+`, and calls it off itself. We can
+    #   then override *that* and call our own `+` in the evaluator
     def __init__(self, vtype, value=None, symbolic=False,
                  constraint=None, trace=None):
         self.vtype = vtype
@@ -163,7 +169,13 @@ class ValueAST(AST):
         self.constraint = constraint
 
         if trace is None:
-            self.trace = [str(self.tag)]
+            # Traces are in effect a meta-constraint language
+            # that interfaces with the term *AND* type languages
+            # that we've been implementing here...
+            if symbolic:
+                self.trace = [str(self.tag)]
+            else:
+                self.trace = [str(value) + " tag: " + str(self.tag)]
         else:
             self.trace = trace
 
@@ -247,15 +259,37 @@ class ValueAST(AST):
 
         rv = ValueAST(bool)
 
+        self_trace = "(" + " ".join(self.trace) + ")"
+
+        if type(other) is ValueAST:
+            other_trace = " ".join(other.trace)
+        else:
+            other_trace = str(other)
+
+        other_trace = "({0})".format(other_trace)
+
+        # one thing to note: there may be a case to be made that
+        # on symbolic comparison, we should check if the symbolic
+        # values have constraints that would make them true. For
+        # example:
+        # g = ValueAST.new_symbolic_int(constraint: "(< $it 10)")
+        # h = ValueAST.new_symbolic_int(constraint: "(>= $it 10)")
+        # j = g < h
+        # print j.value
+        # we may wish to have j be *true* in this case, because we
+        # know given those constraints that g < h for all values that
+        # g may contain. This may also just be something that goes
+        # to the scenario generator, and we don't *really* care what
+        # else goes in there
         if self.symbolic is False and type(other) is not ValueAST:
             rv.value = self.value < other
-            rv.trace = ["(", self.trace, ") < ", other]
+            rv.trace = ["(", self_trace, ") < ", other_trace]
             return rv
         elif (not self.symbolic and
               type(other) is ValueAST and
               not other.symbolic):
             rv.value = self.value < other.value
-            rv.trace = ["(", self.trace, ") < (", other.trace, ")"]
+            rv.trace = [self_trace, " < ", other_trace]
             return rv
 
         # ok, so we're here; that means either self or other
@@ -267,22 +301,10 @@ class ValueAST(AST):
         lhs.symbolic = True
         lhs.value = lhs.tag
 
-        if not self.symbolic:
-            lhs.trace = ["(", self.trace, ") < (", other.trace, ")"]
-            rhs.trace = ["(", self.trace, ") >= (", other.trace, ")"]
-        else:
-            # self itself (lol) is symbolic, so we have to take a little
-            # more care to see what other is.
-            if type(other) is not ValueAST:
-                lhs.trace = ["(", self.trace, ") < (", other, ")"]
-                rhs.trace = ["(", self.trace, ") >= (", other, ")"]
-            else:
-                lhs.trace = ["(", self.trace, ") < (", other.trace, ")"]
-                rhs.trace = ["(", self.trace, ") >= (", other.trace, ")"]
+        lhs.trace = [self_trace, " < ", other_trace]
+        rhs.trace = [self_trace, " >= ", other_trace]
 
         return ForkValueAST(lhs, rhs)
-
-        pass
 
     def __gt__(self, other):
         pass
