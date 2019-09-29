@@ -283,7 +283,7 @@ class ValueAST(AST):
         # else goes in there
         if self.symbolic is False and type(other) is not ValueAST:
             rv.value = self.value < other
-            rv.trace = ["(", self_trace, ") < ", other_trace]
+            rv.trace = [self_trace, " < ", other_trace]
             return rv
         elif (not self.symbolic and
               type(other) is ValueAST and
@@ -307,16 +307,152 @@ class ValueAST(AST):
         return ForkValueAST(lhs, rhs)
 
     def __gt__(self, other):
-        pass
+        rv = ValueAST(bool)
+
+        self_trace = "(" + " ".join(self.trace) + ")"
+
+        if type(other) is ValueAST:
+            other_trace = " ".join(other.trace)
+        else:
+            other_trace = str(other)
+
+        other_trace = "({0})".format(other_trace)
+
+        if self.symbolic is False and type(other) is not ValueAST:
+            rv.value = self.value > other
+            rv.trace = [ self_trace, " > ", other_trace]
+            return rv
+        elif (not self.symbolic and
+              type(other) is ValueAST and
+              not other.symbolic):
+            rv.value = self.value > other.value
+            rv.trace = [self_trace, " > ", other_trace]
+            return rv
+
+        # ok, so we're here; that means either self or other
+        # was symbolic, meaning we need to return a symbolic
+        # Boolean set, aka a ForkValue
+
+        lhs = rv
+        rhs = ValueAST.new_symbolic_bool()
+        lhs.symbolic = True
+        lhs.value = lhs.tag
+
+        lhs.trace = [self_trace, " > ", other_trace]
+        rhs.trace = [self_trace, " <= ", other_trace]
+
+        return ForkValueAST(lhs, rhs)
 
     def __le__(self, other):
-        pass
+        rv = ValueAST(bool)
+
+        self_trace = "(" + " ".join(self.trace) + ")"
+
+        if type(other) is ValueAST:
+            other_trace = " ".join(other.trace)
+        else:
+            other_trace = str(other)
+
+        other_trace = "({0})".format(other_trace)
+
+        if self.symbolic is False and type(other) is not ValueAST:
+            rv.value = self.value <= other
+            rv.trace = [ self_trace, " <= ", other_trace]
+            return rv
+        elif (not self.symbolic and
+              type(other) is ValueAST and
+              not other.symbolic):
+            rv.value = self.value <= other.value
+            rv.trace = [self_trace, " <= ", other_trace]
+            return rv
+
+        # ok, so we're here; that means either self or other
+        # was symbolic, meaning we need to return a symbolic
+        # Boolean set, aka a ForkValue
+
+        lhs = rv
+        rhs = ValueAST.new_symbolic_bool()
+        lhs.symbolic = True
+        lhs.value = lhs.tag
+
+        lhs.trace = [self_trace, " <= ", other_trace]
+        rhs.trace = [self_trace, " > ", other_trace]
+
+        return ForkValueAST(lhs, rhs)
 
     def __ge__(self, other):
-        pass
+        rv = ValueAST(bool)
+
+        self_trace = "(" + " ".join(self.trace) + ")"
+
+        if type(other) is ValueAST:
+            other_trace = " ".join(other.trace)
+        else:
+            other_trace = str(other)
+
+        other_trace = "({0})".format(other_trace)
+
+        if self.symbolic is False and type(other) is not ValueAST:
+            rv.value = self.value >= other
+            rv.trace = [ self_trace, " >= ", other_trace]
+            return rv
+        elif (not self.symbolic and
+              type(other) is ValueAST and
+              not other.symbolic):
+            rv.value = self.value >= other.value
+            rv.trace = [self_trace, " >= ", other_trace]
+            return rv
+
+        # ok, so we're here; that means either self or other
+        # was symbolic, meaning we need to return a symbolic
+        # Boolean set, aka a ForkValue
+
+        lhs = rv
+        rhs = ValueAST.new_symbolic_bool()
+        lhs.symbolic = True
+        lhs.value = lhs.tag
+
+        lhs.trace = [self_trace, " >= ", other_trace]
+        rhs.trace = [self_trace, " < ", other_trace]
+
+        return ForkValueAST(lhs, rhs)
 
     def __ne__(self, other):
-        pass
+        rv = ValueAST(bool)
+
+        self_trace = "(" + " ".join(self.trace) + ")"
+
+        if type(other) is ValueAST:
+            other_trace = " ".join(other.trace)
+        else:
+            other_trace = str(other)
+
+        other_trace = "({0})".format(other_trace)
+
+        if self.symbolic is False and type(other) is not ValueAST:
+            rv.value = self.value != other
+            rv.trace = [ self_trace, " != ", other_trace]
+            return rv
+        elif (not self.symbolic and
+              type(other) is ValueAST and
+              not other.symbolic):
+            rv.value = self.value != other.value
+            rv.trace = [self_trace, " != ", other_trace]
+            return rv
+
+        # ok, so we're here; that means either self or other
+        # was symbolic, meaning we need to return a symbolic
+        # Boolean set, aka a ForkValue
+
+        lhs = rv
+        rhs = ValueAST.new_symbolic_bool()
+        lhs.symbolic = True
+        lhs.value = lhs.tag
+
+        lhs.trace = [self_trace, " != ", other_trace]
+        rhs.trace = [self_trace, " == ", other_trace]
+
+        return ForkValueAST(lhs, rhs)
 
     def __eq__(self, other):
         # NOTE so reading the SAGE paper, we see that we want at least
