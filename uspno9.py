@@ -500,7 +500,39 @@ class ValueAST(AST):
         return ForkValueAST(lhs, rhs)
 
     def __add__(self, other):
-        pass
+        rv = ValueAST(None)
+
+        self_trace = "(" + " ".join(self.trace) + ")"
+
+        if type(other) is ValueAST:
+            other_trace = " ".join(other.trace)
+        else:
+            other_trace = str(other)
+
+        other_trace = "({0})".format(other_trace)
+
+        if self.symbolic is False and type(other) is not ValueAST:
+            rv.value = self.value + other
+            rv.vtype = type(rv.value)
+            rv.trace = [ self_trace, "+", other_trace]
+            rv.symbolic = False
+            return rv
+        elif (not self.symbolic and
+              type(other) is ValueAST and
+              not other.symbolic):
+            rv.value = self.value + other.value
+            rv.vtype = type(rv.value)
+            rv.trace = [self_trace, "+", other_trace]
+            rv.symbolic = False
+            return rv
+        elif self.symbolic:
+            # here we know that self isn't symbolic, so other
+            # may be...
+            pass
+        elif other.symbolic:
+            # ok, so other is actually symbolic, and we aren't
+            # this technically could be the else case...
+            pass
 
     def __radd__(self, other):
         pass
