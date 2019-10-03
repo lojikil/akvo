@@ -692,6 +692,18 @@ class Eval(object):
     def __init__(self, asts, env):
         pass
 
+    def execute(self):
+        # walk over each AST, and execute it via
+        # the microexecutor below, collecting the
+        # state updates for each
+        for ast in self.asts:
+            pass
+        pass
+
+    def microexecute(self, cur_ast):
+        # execute ONE and ONLY ONE AST
+        pass
+
 
 class ControlFlowGraph(object):
     def __init__(self, asts, env):
