@@ -682,10 +682,32 @@ class VarRefAST(AST):
         pass
 
 
+class PathExecution(object):
+    def __init__(self, asts, constraint=None):
+        self.asts = asts
+        self.constraint = None
+
+
 class EvalEnv(object):
+    # this is a simple spaghetti stack object
+    # `members` is a dict of the current scope,
+    # and any refs not found in `members` should
+    # be passed to parent...
+
     def __init__(self, members, parent=None):
         self.members = members
         self.parent = parent
+
+    def get(self, key):
+        if key in self.members:
+            return self.members[key]
+        elif self.parent is not None:
+            return self.parent.get(key)
+        else:
+            raise KeyError
+
+    def set(self, key, value):
+        self.members[key] = value
 
 
 class Eval(object):
@@ -702,7 +724,36 @@ class Eval(object):
 
     def microexecute(self, cur_ast):
         # execute ONE and ONLY ONE AST
-        pass
+        # assuming we have already split
+        # things with ANF; an apply/eval
+        # system could be worked into here
+        # as well if ANF were not the case
+        # also, we need a generic "set!"
+        # form as well...
+        if type(cur_ast) is ValueAST:
+            return (cur_ast, state)
+		elif type(cur_ast) is FunctionAST:
+            pass
+        elif type(cur_ast) is FunctionCallAST:
+            pass
+        elif type(cur_ast) is VariableDecAST:
+            pass
+        elif type(cur_ast) is IfAST:
+            pass
+        elif type(cur_ast) is WhileAST:
+            pass
+        elif type(cur_ast) is ForAST:
+            pass
+        elif type(cur_ast) is CondAST:
+            pass
+        elif type(cur_ast) is BeginAST or type(cur_ast) is ExplicitBeginAST:
+            # for *most* cases these two are exactly the same
+            # the only use case of the latter is when we're doing
+            # source to source translation and the user has added
+            # an explicit block, such as using an extra {} in C
+            pass
+        elif type(cur_ast) is VarRefAST:
+            pass
 
 
 class ControlFlowGraph(object):
