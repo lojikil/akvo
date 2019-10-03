@@ -516,7 +516,6 @@ class ValueAST(AST):
             rv.vtype = type(rv.value)
             rv.trace = [ self_trace, "+", other_trace]
             rv.symbolic = False
-            return rv
         elif (not self.symbolic and
               type(other) is ValueAST and
               not other.symbolic):
@@ -524,15 +523,14 @@ class ValueAST(AST):
             rv.vtype = type(rv.value)
             rv.trace = [self_trace, "+", other_trace]
             rv.symbolic = False
-            return rv
-        elif self.symbolic:
-            # here we know that self isn't symbolic, so other
-            # may be...
-            pass
-        elif other.symbolic:
-            # ok, so other is actually symbolic, and we aren't
-            # this technically could be the else case...
-            pass
+        elif self.symbolic or other.symbolic:
+            # here we know that self is symbolic
+            rv.vtype = self.vtype # is this correct?
+            rv.symbolic = True
+            rv.value = rv.tag
+            rv.trace = [self_trace, "+", other_trace]
+
+        return rv
 
     def __radd__(self, other):
         pass
