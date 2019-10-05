@@ -732,7 +732,7 @@ class Eval(object):
         # form as well...
         if type(cur_ast) is ValueAST:
             return (cur_ast, state)
-		elif type(cur_ast) is FunctionAST:
+        elif type(cur_ast) is FunctionAST:
             pass
         elif type(cur_ast) is FunctionCallAST:
             pass
