@@ -730,6 +730,7 @@ class Eval(object):
         # as well if ANF were not the case
         # also, we need a generic "set!"
         # form as well...
+
         if type(cur_ast) is ValueAST:
             return (cur_ast, state)
         elif type(cur_ast) is FunctionAST:
@@ -737,7 +738,8 @@ class Eval(object):
         elif type(cur_ast) is FunctionCallAST:
             pass
         elif type(cur_ast) is VariableDecAST:
-            pass
+            self.env.set(cur_ast.name, cur_ast.value)
+            return cur_ast
         elif type(cur_ast) is IfAST:
             pass
         elif type(cur_ast) is WhileAST:
