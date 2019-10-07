@@ -734,7 +734,13 @@ class EvalEnv(object):
 class Eval(object):
     def __init__(self, asts, env):
         self.asts = asts
-        self.env = env
+
+        # allow users to pass raw dicts,
+        # but convert them behind the scenes
+        if type(env) is not EvalEnv:
+            self.env = EvalEnv(env)
+        else:
+            self.env = env
 
     def execute(self):
         # walk over each AST, and execute it via
@@ -756,7 +762,8 @@ class Eval(object):
         if type(cur_ast) is ValueAST:
             return cur_ast
         elif type(cur_ast) is FunctionAST:
-            pass
+            self.env.set(cur_ast.name, cur_ast.value)
+            return cur_ast
         elif type(cur_ast) is FunctionCallAST:
             pass
         elif type(cur_ast) is VariableDecAST:
@@ -805,7 +812,10 @@ class Eval(object):
             # an explicit block, such as using an extra {} in C
             pass
         elif type(cur_ast) is VarRefAST:
-            pass
+            try:
+                return self.env.get(cur_ast.variable)
+            except Exception:
+                return ValueAST(None)
 
 
 class ControlFlowGraph(object):
