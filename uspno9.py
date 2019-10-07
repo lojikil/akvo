@@ -688,6 +688,17 @@ class PathExecution(object):
         self.constraint = None
 
 
+class ForkPathExecution(object):
+    # constraints so should be a list of path constraints
+    # asts should be a list of ASTs to match constraints
+    # so for example:
+    # [Constraint(x == 10), Constraint(x != 10)]
+    # [Begin(Call(print, "what?")), Begin(Call(print "ok..."))]
+    def _init(self, constraints, asts):
+        self.constraints = constraints
+        self.asts = asts
+
+
 class EvalEnv(object):
     # this is a simple spaghetti stack object
     # `members` is a dict of the current scope,
@@ -741,8 +752,31 @@ class Eval(object):
             self.env.set(cur_ast.name, cur_ast.value)
             return cur_ast
         elif type(cur_ast) is IfAST:
-            pass
+            condition = cur_ast.condition
+            thenbranch = cur_ast.thenbranch
+            elsebanch = cur_ast.elsebranch
+
+            # look up or execute certain
+            # conditions and set the `condition`
+            # variable to be the result, with the
+            # trace being that we looked up the
+            # variable or called the function
+            if type(condition) is VariableAST:
+                pass
+            elif type(condition) is FunctionCallAST:
+                pass
+
+            if condition.symbolic:
+                pass
+            elif condition.value is True:
+                return PathExecution(thenbranch, condition)
+            else:
+                return PathExecution(elsebranch, condition)
+
         elif type(cur_ast) is WhileAST:
+            # we could do something very similar here
+            # basically just return a state with the
+            # loop within it, so long as it's true.
             pass
         elif type(cur_ast) is ForAST:
             pass
