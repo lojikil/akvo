@@ -320,7 +320,7 @@ class ValueAST(AST):
 
         if self.symbolic is False and type(other) is not ValueAST:
             rv.value = self.value > other
-            rv.trace = [ self_trace, " > ", other_trace]
+            rv.trace = [self_trace, " > ", other_trace]
             return rv
         elif (not self.symbolic and
               type(other) is ValueAST and
@@ -357,7 +357,7 @@ class ValueAST(AST):
 
         if self.symbolic is False and type(other) is not ValueAST:
             rv.value = self.value <= other
-            rv.trace = [ self_trace, " <= ", other_trace]
+            rv.trace = [self_trace, " <= ", other_trace]
             return rv
         elif (not self.symbolic and
               type(other) is ValueAST and
@@ -394,7 +394,7 @@ class ValueAST(AST):
 
         if self.symbolic is False and type(other) is not ValueAST:
             rv.value = self.value >= other
-            rv.trace = [ self_trace, " >= ", other_trace]
+            rv.trace = [self_trace, " >= ", other_trace]
             return rv
         elif (not self.symbolic and
               type(other) is ValueAST and
@@ -431,7 +431,7 @@ class ValueAST(AST):
 
         if self.symbolic is False and type(other) is not ValueAST:
             rv.value = self.value != other
-            rv.trace = [ self_trace, " != ", other_trace]
+            rv.trace = [self_trace, " != ", other_trace]
             return rv
         elif (not self.symbolic and
               type(other) is ValueAST and
@@ -514,7 +514,7 @@ class ValueAST(AST):
         if self.symbolic is False and type(other) is not ValueAST:
             rv.value = self.value + other
             rv.vtype = type(rv.value)
-            rv.trace = [ self_trace, "+", other_trace]
+            rv.trace = [self_trace, "+", other_trace]
             rv.symbolic = False
         elif (not self.symbolic and
               type(other) is ValueAST and
@@ -525,7 +525,7 @@ class ValueAST(AST):
             rv.symbolic = False
         elif self.symbolic or other.symbolic:
             # here we know that self is symbolic
-            rv.vtype = self.vtype # is this correct?
+            rv.vtype = self.vtype  # is this correct?
             rv.symbolic = True
             rv.value = rv.tag
             rv.trace = [self_trace, "+", other_trace]
@@ -754,7 +754,7 @@ class Eval(object):
         # form as well...
 
         if type(cur_ast) is ValueAST:
-            return (cur_ast, state)
+            return cur_ast
         elif type(cur_ast) is FunctionAST:
             pass
         elif type(cur_ast) is FunctionCallAST:
@@ -775,7 +775,7 @@ class Eval(object):
             if type(condition) is VarRefAST:
                 try:
                     condition = self.env.get(condition.variable)
-                except:
+                except Exception:
                     condition = ValueAST.new_symbolic_bool()
             elif type(condition) is FunctionCallAST:
                 pass
