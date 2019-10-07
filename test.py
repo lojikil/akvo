@@ -54,3 +54,30 @@ print cg.value, cg.trace
 print ch.value, ch.trace
 print cj.value, cj.trace
 print ck.value, ck.trace
+
+from uspno9 import *
+
+print "\nexecution tests\n====="
+
+if0 = IfAST(ValueAST.new_bool(True), ValueAST.new_integer(10), ValueAST.new_integer(11))
+if1 = IfAST(VarRefAST("foo"), ValueAST.new_integer(12), ValueAST.new_integer(13))
+
+print "execute the following test cases:"
+print if0.to_sexpr()
+print if1.to_sexpr()
+
+rootenv0 = EvalEnv({"foo": ValueAST.new_bool(True)})
+rootenv1 = EvalEnv({"foo": ValueAST.new_symbolic_bool()})
+
+# we don't affix the asts for now, because we're just
+# going to microexecute them
+vm0 = Eval(None, rootenv0)
+vm1 = Eval(None, rootenv1)
+
+results = [
+    vm0.microexecute(if0),
+    vm1.microexecute(if0),
+    vm0.microexecute(if1),
+    vm1.microexecute(if1)]
+
+print "results: ", results

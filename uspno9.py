@@ -687,6 +687,16 @@ class PathExecution(object):
         self.asts = asts
         self.constraint = None
 
+    def __str__(self):
+        tmpl = "PathExecution({0}, {1})"
+
+        res = tmpl.format(self.asts.to_sexpr(),
+                          str(self.constraint))
+        return res
+
+    def __repr__(self):
+        return str(self)
+
 
 class ForkPathExecution(object):
     # constraints so should be a list of path constraints
@@ -694,7 +704,7 @@ class ForkPathExecution(object):
     # so for example:
     # [Constraint(x == 10), Constraint(x != 10)]
     # [Begin(Call(print, "what?")), Begin(Call(print "ok..."))]
-    def _init(self, constraints, asts):
+    def __init__(self, constraints, asts):
         self.constraints = constraints
         self.asts = asts
 
@@ -723,7 +733,8 @@ class EvalEnv(object):
 
 class Eval(object):
     def __init__(self, asts, env):
-        pass
+        self.asts = asts
+        self.env = env
 
     def execute(self):
         # walk over each AST, and execute it via
@@ -754,20 +765,25 @@ class Eval(object):
         elif type(cur_ast) is IfAST:
             condition = cur_ast.condition
             thenbranch = cur_ast.thenbranch
-            elsebanch = cur_ast.elsebranch
+            elsebranch = cur_ast.elsebranch
 
             # look up or execute certain
             # conditions and set the `condition`
             # variable to be the result, with the
             # trace being that we looked up the
             # variable or called the function
-            if type(condition) is VariableAST:
-                pass
+            if type(condition) is VarRefAST:
+                try:
+                    condition = this.env.get(condition.name)
+                except:
+                    condition = ValueAST.new_symbolic_bool()
             elif type(condition) is FunctionCallAST:
                 pass
 
             if condition.symbolic:
-                pass
+                return ForkPathExecution([condition == True,
+                                          condition != True],
+                                         [thenbranch, elsebranch])
             elif condition.value is True:
                 return PathExecution(thenbranch, condition)
             else:
