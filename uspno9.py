@@ -685,7 +685,7 @@ class VarRefAST(AST):
 class PathExecution(object):
     def __init__(self, asts, constraint=None):
         self.asts = asts
-        self.constraint = None
+        self.constraint = constraint
 
     def __str__(self):
         tmpl = "PathExecution({0}, {1})"
@@ -774,7 +774,7 @@ class Eval(object):
             # variable or called the function
             if type(condition) is VarRefAST:
                 try:
-                    condition = this.env.get(condition.name)
+                    condition = self.env.get(condition.variable)
                 except:
                     condition = ValueAST.new_symbolic_bool()
             elif type(condition) is FunctionCallAST:
