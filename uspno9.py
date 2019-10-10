@@ -11,6 +11,7 @@ class FunctionAST(AST):
         self.name = name
         self.params = params
         self.returntype = returntype
+        self.userdefined = True
         if body is None:
             self.body = None
             self.symbolic = True
@@ -734,10 +735,13 @@ class EvalEnv(object):
 class Eval(object):
     def __init__(self, asts, env):
         self.asts = asts
+        self.builtins = set("<", "<=", ">", ">=", "+", "==", "!=", "print")
 
         # allow users to pass raw dicts,
         # but convert them behind the scenes
-        if type(env) is not EvalEnv:
+        if env is None:
+            self.env = EvalEnv({})
+        elif type(env) is not EvalEnv:
             self.env = EvalEnv(env)
         else:
             self.env = env
@@ -750,7 +754,7 @@ class Eval(object):
             pass
         pass
 
-    def microexecute(self, cur_ast):
+    def microexecute(self, cur_ast, mustack=None, muenv=None):
         # execute ONE and ONLY ONE AST
         # assuming we have already split
         # things with ANF; an apply/eval
@@ -758,6 +762,12 @@ class Eval(object):
         # as well if ANF were not the case
         # also, we need a generic "set!"
         # form as well...
+
+        if mustack is None:
+            mustack = []
+
+        if muenv is None:
+            muenv = self.env
 
         if type(cur_ast) is ValueAST:
             return cur_ast
@@ -785,7 +795,14 @@ class Eval(object):
                 except Exception:
                     condition = ValueAST.new_symbolic_bool()
             elif type(condition) is FunctionCallAST:
-                pass
+                # this really should be handled by an eval pass
+                # in an apply-eval loop I guess...
+                if cur_ast.name in self.builtins:
+                    condition = self.callfn(cur_ast)
+                else:
+                    # here we need to push the stack, and return
+                    # that really.
+                    pass
 
             if condition.symbolic:
                 return ForkPathExecution([condition == True,
@@ -817,8 +834,17 @@ class Eval(object):
             except Exception:
                 return ValueAST(None)
 
+    def callfn(cur_ast):
+        # this is a first rough cut of calling
+        # built-ins. Part of why this is another
+        # method on Eval objects is so that if you
+        # want to override how they work, you can
+        # leave the microexecute & execute functions
+        # alone and then only override this function
+        pass
 
-class ControlFlowGraph(object):
+
+clas ControlFlowGraph(object):
     def __init__(self, asts, env):
         pass
 
