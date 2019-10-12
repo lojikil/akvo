@@ -81,3 +81,11 @@ results = [
     vm1.microexecute(if1)]
 
 print "results: ", results
+
+cond1 = uspno9.FunctionCallAST("<", [uspno9.ValueAST.new_integer(10),
+                                     uspno9.ValueAST.new_integer(11)],
+                                     bool)
+print type(cond1)
+res = vm0.microexecute(cond1)
+print res.value
+print res.trace

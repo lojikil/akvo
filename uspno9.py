@@ -735,7 +735,7 @@ class EvalEnv(object):
 class Eval(object):
     def __init__(self, asts, env):
         self.asts = asts
-        self.builtins = set("<", "<=", ">", ">=", "+", "==", "!=", "print")
+        self.builtins = set(["<", "<=", ">", ">=", "+", "==", "!=", "print"])
 
         # allow users to pass raw dicts,
         # but convert them behind the scenes
@@ -775,7 +775,7 @@ class Eval(object):
             self.env.set(cur_ast.name, cur_ast.value)
             return cur_ast
         elif type(cur_ast) is FunctionCallAST:
-            pass
+            return self.callfn(cur_ast)
         elif type(cur_ast) is VariableDecAST:
             self.env.set(cur_ast.name, cur_ast.value)
             return cur_ast
@@ -834,17 +834,28 @@ class Eval(object):
             except Exception:
                 return ValueAST(None)
 
-    def callfn(cur_ast):
+    def callfn(self, cur_ast):
         # this is a first rough cut of calling
         # built-ins. Part of why this is another
         # method on Eval objects is so that if you
         # want to override how they work, you can
         # leave the microexecute & execute functions
         # alone and then only override this function
+        #
+        # probably should turn builtins to a dict that
+        # hold lambdas to be applied for now. Also,
+        # definitely need an apply/eval pass, even for
+        # ANF (need to look up values prior to being
+        # passed in here...)
+        name = cur_ast.name
+        params = cur_ast.params
+
+        if name is '<':
+            return apply(lambda x, y: x < y, params)
         pass
 
 
-clas ControlFlowGraph(object):
+class ControlFlowGraph(object):
     def __init__(self, asts, env):
         pass
 
