@@ -735,6 +735,10 @@ class EvalEnv(object):
 class Eval(object):
     def __init__(self, asts, env):
         self.asts = asts
+
+        # thinking about it, you can even just
+        # change these functions out, instead of
+        # refactoring anything...
         self.builtins = {
             "<": lambda x, y: x < y,
             "<=": lambda x, y: x <= y,
