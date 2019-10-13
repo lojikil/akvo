@@ -735,7 +735,15 @@ class EvalEnv(object):
 class Eval(object):
     def __init__(self, asts, env):
         self.asts = asts
-        self.builtins = set(["<", "<=", ">", ">=", "+", "==", "!=", "print"])
+        self.builtins = {
+            "<": lambda x, y: x < y,
+            "<=": lambda x, y: x <= y,
+            ">": lambda x, y: x > y,
+            ">=": lambda x, y: x >= y,
+            "==": lambda x, y: x == y,
+            "!=": lambda x, y: x != y,
+            "+": lambda x, y: x + y
+        }
 
         # allow users to pass raw dicts,
         # but convert them behind the scenes
@@ -850,9 +858,8 @@ class Eval(object):
         name = cur_ast.name
         params = cur_ast.params
 
-        if name is '<':
-            return apply(lambda x, y: x < y, params)
-        pass
+        if name in self.builtins:
+            return apply(self.builtins[name], params)
 
 
 class ControlFlowGraph(object):
