@@ -787,7 +787,17 @@ class Eval(object):
             self.env.set(cur_ast.name, cur_ast.value)
             return cur_ast
         elif type(cur_ast) is FunctionCallAST:
-            return self.callfn(cur_ast)
+            new_ast = FunctionCallAST(cur_ast.name,
+                                       [],
+                                       cur_ast.returntype,
+                                       cur_ast.symbolic)
+
+            for param in cur_ast.params:
+                if type(param) is VarRefAST:
+                    new_ast.params.append(muenv.get(param.variable))
+                else:
+                    new_ast.params.append(param)
+            return self.callfn(new_ast)
         elif type(cur_ast) is VariableDecAST:
             self.env.set(cur_ast.name, cur_ast.value)
             return cur_ast
@@ -809,8 +819,19 @@ class Eval(object):
             elif type(condition) is FunctionCallAST:
                 # this really should be handled by an eval pass
                 # in an apply-eval loop I guess...
+                new_ast = FunctionCallAST(cur_ast.name,
+                                           [],
+                                           cur_ast.returntype,
+                                           cur_ast.symbolic)
+
+                for param in cur_ast.params:
+                    if type(param) is VarRefAST:
+                        new_ast.params.append(muenv.get(param.variable))
+                    else:
+                        new_ast.params.append(param)
+
                 if cur_ast.name in self.builtins:
-                    condition = self.callfn(cur_ast)
+                    condition = self.callfn(new_ast)
                 else:
                     # here we need to push the stack, and return
                     # that really.

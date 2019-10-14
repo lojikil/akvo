@@ -66,7 +66,8 @@ print "execute the following test cases:"
 print if0.to_sexpr()
 print if1.to_sexpr()
 
-rootenv0 = EvalEnv({"foo": ValueAST.new_bool(True)})
+rootenv0 = EvalEnv({"foo": ValueAST.new_bool(True),
+                    "bar": ValueAST.new_integer(10)})
 rootenv1 = EvalEnv({"foo": ValueAST.new_symbolic_bool()})
 
 # we don't affix the asts for now, because we're just
@@ -94,6 +95,16 @@ cond2 = uspno9.FunctionCallAST("<=", [uspno9.ValueAST.new_integer(10),
                                      uspno9.ValueAST.new_integer(11)],
                                      bool)
 print type(cond2)
+print cond2.to_sexpr()
 res = vm0.microexecute(cond2)
+print res.value
+print res.trace
+
+cond3 = uspno9.FunctionCallAST("<=", [uspno9.VarRefAST("bar"),
+                                     uspno9.ValueAST.new_integer(11)],
+                                     bool)
+print type(cond3)
+print cond3.to_sexpr()
+res = vm0.microexecute(cond3)
 print res.value
 print res.trace
