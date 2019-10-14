@@ -788,9 +788,9 @@ class Eval(object):
             return cur_ast
         elif type(cur_ast) is FunctionCallAST:
             new_ast = FunctionCallAST(cur_ast.name,
-                                       [],
-                                       cur_ast.returntype,
-                                       cur_ast.symbolic)
+                                      [],
+                                      cur_ast.returntype,
+                                      cur_ast.symbolic)
 
             for param in cur_ast.params:
                 if type(param) is VarRefAST:
@@ -823,9 +823,9 @@ class Eval(object):
                 # this really should be handled by an eval pass
                 # in an apply-eval loop I guess...
                 new_ast = FunctionCallAST(cur_ast.name,
-                                           [],
-                                           cur_ast.returntype,
-                                           cur_ast.symbolic)
+                                          [],
+                                          cur_ast.returntype,
+                                          cur_ast.symbolic)
 
                 for param in cur_ast.params:
                     if type(param) is VarRefAST:
