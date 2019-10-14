@@ -855,13 +855,13 @@ class Eval(object):
                     pass
 
             if condition.symbolic:
-                return ForkPathExecution([condition == True,
-                                          condition != True],
+                return ForkPathExecution([cur_ast.condition == True,
+                                          cur_ast.condition != True],
                                          [thenbranch, elsebranch])
             elif condition.value is True:
-                return PathExecution(thenbranch, condition)
+                return PathExecution(thenbranch, cur_ast.condition)
             else:
-                return PathExecution(elsebranch, condition)
+                return PathExecution(elsebranch, cur_ast.condition)
 
         elif type(cur_ast) is WhileAST:
             # we could do something very similar here
@@ -893,7 +893,6 @@ class Eval(object):
                     if type(param) is VarRefAST:
                         try:
                             new_ast.params.append(muenv.get(param.variable))
-                            found = muenv.get(param.variable)
                         except KeyError:
                             new_ast.params.append(ValueAST(None))
                     else:
@@ -907,11 +906,11 @@ class Eval(object):
                     pass
 
             if condition.symbolic:
-                return ForkPathExecution([condition == True,
-                                          condition != True],
+                return ForkPathExecution([cur_ast.condition == True,
+                                          cur_ast.condition != True],
                                          [body, None])
             elif condition.value is True:
-                return PathExecution(body, condition)
+                return PathExecution(body, cur_ast.condition)
             else:
                 return None
             pass
