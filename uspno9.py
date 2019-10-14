@@ -258,7 +258,7 @@ class ValueAST(AST):
         # to note what the path constraint is, and then we can just
         # return that the constraint here is that they are equal...
 
-        rv = ValueAST(bool)
+        rv = ValueAST(bool, False)
 
         self_trace = "(" + " ".join(self.trace) + ")"
 
@@ -308,7 +308,7 @@ class ValueAST(AST):
         return ForkValueAST(lhs, rhs)
 
     def __gt__(self, other):
-        rv = ValueAST(bool)
+        rv = ValueAST(bool, False)
 
         self_trace = "(" + " ".join(self.trace) + ")"
 
@@ -345,7 +345,7 @@ class ValueAST(AST):
         return ForkValueAST(lhs, rhs)
 
     def __le__(self, other):
-        rv = ValueAST(bool)
+        rv = ValueAST(bool, False)
 
         self_trace = "(" + " ".join(self.trace) + ")"
 
@@ -382,7 +382,7 @@ class ValueAST(AST):
         return ForkValueAST(lhs, rhs)
 
     def __ge__(self, other):
-        rv = ValueAST(bool)
+        rv = ValueAST(bool, False)
 
         self_trace = "(" + " ".join(self.trace) + ")"
 
@@ -683,6 +683,17 @@ class VarRefAST(AST):
         pass
 
 
+class SetValueAST(AST):
+    def __init__(self, variable, value):
+        self.variable = variable
+        self.value = value
+
+    def to_sexpr(self):
+        ret = ["set!", self.variable]
+        ret.append(self.value.to_sexpr())
+        return "(" + " ".join(ret) + ")"
+
+
 class PathExecution(object):
     def __init__(self, asts, constraint=None):
         self.asts = asts
@@ -822,12 +833,12 @@ class Eval(object):
             elif type(condition) is FunctionCallAST:
                 # this really should be handled by an eval pass
                 # in an apply-eval loop I guess...
-                new_ast = FunctionCallAST(cur_ast.name,
+                new_ast = FunctionCallAST(condition.name,
                                           [],
-                                          cur_ast.returntype,
-                                          cur_ast.symbolic)
+                                          condition.returntype,
+                                          condition.symbolic)
 
-                for param in cur_ast.params:
+                for param in condition.params:
                     if type(param) is VarRefAST:
                         try:
                             new_ast.params.append(muenv.get(param.variable))
@@ -836,7 +847,7 @@ class Eval(object):
                     else:
                         new_ast.params.append(param)
 
-                if cur_ast.name in self.builtins:
+                if condition.name in self.builtins:
                     condition = self.callfn(new_ast)
                 else:
                     # here we need to push the stack, and return
@@ -856,6 +867,53 @@ class Eval(object):
             # we could do something very similar here
             # basically just return a state with the
             # loop within it, so long as it's true.
+
+            condition = cur_ast.condition
+            body = cur_ast.body
+
+            # look up or execute certain
+            # conditions and set the `condition`
+            # variable to be the result, with the
+            # trace being that we looked up the
+            # variable or called the function
+            if type(condition) is VarRefAST:
+                try:
+                    condition = self.env.get(condition.variable)
+                except Exception:
+                    condition = ValueAST.new_symbolic_bool()
+            elif type(condition) is FunctionCallAST:
+                # this really should be handled by an eval pass
+                # in an apply-eval loop I guess...
+                new_ast = FunctionCallAST(condition.name,
+                                          [],
+                                          condition.returntype,
+                                          condition.symbolic)
+
+                for param in condition.params:
+                    if type(param) is VarRefAST:
+                        try:
+                            new_ast.params.append(muenv.get(param.variable))
+                            found = muenv.get(param.variable)
+                        except KeyError:
+                            new_ast.params.append(ValueAST(None))
+                    else:
+                        new_ast.params.append(param)
+
+                if condition.name in self.builtins:
+                    condition = self.callfn(new_ast)
+                else:
+                    # here we need to push the stack, and return
+                    # that really.
+                    pass
+
+            if condition.symbolic:
+                return ForkPathExecution([condition == True,
+                                          condition != True],
+                                         [body, None])
+            elif condition.value is True:
+                return PathExecution(body, condition)
+            else:
+                return None
             pass
         elif type(cur_ast) is ForAST:
             pass

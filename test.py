@@ -100,6 +100,8 @@ res = vm0.microexecute(cond2)
 print res.value
 print res.trace
 
+print "Concrete:"
+
 cond3 = uspno9.FunctionCallAST("<=", [uspno9.VarRefAST("bar"),
                                      uspno9.ValueAST.new_integer(11)],
                                      bool)
@@ -109,6 +111,7 @@ res = vm0.microexecute(cond3)
 print res.value
 print res.trace
 
+print "Symbolic:"
 cond4 = uspno9.FunctionCallAST("<=", [uspno9.VarRefAST("baz"),
                                      uspno9.ValueAST.new_integer(11)],
                                      bool)
@@ -117,3 +120,17 @@ print cond4.to_sexpr()
 res = vm0.microexecute(cond4)
 print res.lhs.to_sexpr()
 print res.rhs.to_sexpr()
+
+print "\nwhile test\n====="
+
+body = [
+    FunctionCallAST("print", [VarRefAST("bar")]),
+    SetValueAST("bar", FunctionCallAST("+",
+                                       [VarRefAST("bar"),
+                                       ValueAST.new_integer(1)]))]
+
+while0 = WhileAST(cond3, BeginAST(body))
+print while0.to_sexpr()
+
+res = vm0.microexecute(while0)
+print res
