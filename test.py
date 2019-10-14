@@ -108,3 +108,12 @@ print cond3.to_sexpr()
 res = vm0.microexecute(cond3)
 print res.value
 print res.trace
+
+cond4 = uspno9.FunctionCallAST("<=", [uspno9.VarRefAST("baz"),
+                                     uspno9.ValueAST.new_integer(11)],
+                                     bool)
+print type(cond4)
+print cond4.to_sexpr()
+res = vm0.microexecute(cond4)
+print res.lhs.to_sexpr()
+print res.rhs.to_sexpr()

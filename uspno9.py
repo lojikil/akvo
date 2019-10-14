@@ -794,7 +794,10 @@ class Eval(object):
 
             for param in cur_ast.params:
                 if type(param) is VarRefAST:
-                    new_ast.params.append(muenv.get(param.variable))
+                    try:
+                        new_ast.params.append(muenv.get(param.variable))
+                    except KeyError:
+                        new_ast.params.append(ValueAST(None))
                 else:
                     new_ast.params.append(param)
             return self.callfn(new_ast)
@@ -826,7 +829,10 @@ class Eval(object):
 
                 for param in cur_ast.params:
                     if type(param) is VarRefAST:
-                        new_ast.params.append(muenv.get(param.variable))
+                        try:
+                            new_ast.params.append(muenv.get(param.variable))
+                        except KeyError:
+                            new_ast.params.append(ValueAST(None))
                     else:
                         new_ast.params.append(param)
 
