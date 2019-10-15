@@ -87,7 +87,7 @@ cond1 = uspno9.FunctionCallAST("<", [uspno9.ValueAST.new_integer(10),
                                      uspno9.ValueAST.new_integer(11)],
                                      bool)
 print type(cond1)
-res = vm0.microexecute(cond1)
+res, stack, env = vm0.microexecute(cond1)
 print res.value
 print res.trace
 
@@ -96,7 +96,7 @@ cond2 = uspno9.FunctionCallAST("<=", [uspno9.ValueAST.new_integer(10),
                                      bool)
 print type(cond2)
 print cond2.to_sexpr()
-res = vm0.microexecute(cond2)
+res, stack, env = vm0.microexecute(cond2)
 print res.value
 print res.trace
 
@@ -108,8 +108,8 @@ cond3 = uspno9.FunctionCallAST("<=", [uspno9.VarRefAST("bar"),
 print type(cond3)
 print cond3.to_sexpr()
 res = vm0.microexecute(cond3)
-print res.value
-print res.trace
+print res[0].value
+print res[0].trace
 
 print "Symbolic:"
 cond4 = uspno9.FunctionCallAST("<=", [uspno9.VarRefAST("baz"),
@@ -117,7 +117,7 @@ cond4 = uspno9.FunctionCallAST("<=", [uspno9.VarRefAST("baz"),
                                      bool)
 print type(cond4)
 print cond4.to_sexpr()
-res = vm0.microexecute(cond4)
+res, stack, env = vm0.microexecute(cond4)
 print res.lhs.to_sexpr()
 print res.rhs.to_sexpr()
 
@@ -132,5 +132,5 @@ body = [
 while0 = WhileAST(cond3, BeginAST(body))
 print while0.to_sexpr()
 
-res = vm0.microexecute(while0)
+res, stack, env = vm0.microexecute(while0)
 print res

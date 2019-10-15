@@ -792,11 +792,13 @@ class Eval(object):
         if muenv is None:
             muenv = self.env
 
+        res = None
+
         if type(cur_ast) is ValueAST:
-            return cur_ast
+            res = cur_ast
         elif type(cur_ast) is FunctionAST:
             self.env.set(cur_ast.name, cur_ast.value)
-            return cur_ast
+            res = cur_ast
         elif type(cur_ast) is FunctionCallAST:
             new_ast = FunctionCallAST(cur_ast.name,
                                       [],
@@ -811,10 +813,10 @@ class Eval(object):
                         new_ast.params.append(ValueAST(None))
                 else:
                     new_ast.params.append(param)
-            return self.callfn(new_ast)
+            res = self.callfn(new_ast)
         elif type(cur_ast) is VariableDecAST:
             self.env.set(cur_ast.name, cur_ast.value)
-            return cur_ast
+            res = cur_ast
         elif type(cur_ast) is IfAST:
             condition = cur_ast.condition
             thenbranch = cur_ast.thenbranch
@@ -855,17 +857,17 @@ class Eval(object):
                     pass
 
             if condition.symbolic:
-                return ForkPathExecution([cur_ast.condition == True,
+                res = ForkPathExecution([cur_ast.condition == True,
                                           cur_ast.condition != True],
                                          [thenbranch, elsebranch])
             elif condition.value is True:
-                return PathExecution(thenbranch, cur_ast.condition)
+                res = PathExecution(thenbranch, cur_ast.condition)
             else:
-                return PathExecution(elsebranch, cur_ast.condition)
+                res = PathExecution(elsebranch, cur_ast.condition)
 
         elif type(cur_ast) is WhileAST:
             # we could do something very similar here
-            # basically just return a state with the
+            # basically just res = a state with the
             # loop within it, so long as it's true.
 
             condition = cur_ast.condition
@@ -906,14 +908,13 @@ class Eval(object):
                     pass
 
             if condition.symbolic:
-                return ForkPathExecution([cur_ast.condition == True,
+                res = ForkPathExecution([cur_ast.condition == True,
                                           cur_ast.condition != True],
                                          [body, None])
             elif condition.value is True:
-                return PathExecution(body, cur_ast.condition)
+                res = PathExecution(body, cur_ast.condition)
             else:
-                return None
-            pass
+                res = None
         elif type(cur_ast) is ForAST:
             pass
         elif type(cur_ast) is CondAST:
@@ -926,9 +927,11 @@ class Eval(object):
             pass
         elif type(cur_ast) is VarRefAST:
             try:
-                return self.env.get(cur_ast.variable)
+                res = self.env.get(cur_ast.variable)
             except Exception:
-                return ValueAST(None)
+                res = ValueAST(None)
+
+        return (res, muenv, mustack)
 
     def callfn(self, cur_ast):
         # this is a first rough cut of calling
