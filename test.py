@@ -38,7 +38,7 @@ n = a == s
 res = [z,x,c,v,b,n]
 
 for r in res:
-    print r.value, r.trace
+    print r.value, r.trace, r.symbolic
 
 
 print "\narithmatic tests\n====="

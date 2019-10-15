@@ -419,7 +419,7 @@ class ValueAST(AST):
         return ForkValueAST(lhs, rhs)
 
     def __ne__(self, other):
-        rv = ValueAST(bool)
+        rv = ValueAST(bool, False)
 
         self_trace = "(" + " ".join(self.trace) + ")"
 
@@ -463,7 +463,7 @@ class ValueAST(AST):
         # to note what the path constraint is, and then we can just
         # return that the constraint here is that they are equal...
 
-        rv = ValueAST(bool)
+        rv = ValueAST(bool, False)
 
         if self.symbolic is False and type(other) is not ValueAST:
             rv.value = self.value == other
