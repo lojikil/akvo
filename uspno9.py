@@ -794,6 +794,28 @@ class Eval(object):
 
         res = None
 
+        # let's change this; we need to have
+        # an apply-eval cycle here, so that
+        # all instructions below can simply
+        # execute the AST at such time as
+        # it is determined that they can
+        # execute one and ONLY ONE AST.
+        #
+        # so, we need to extract th
+        # condition or the like for
+        # certain forms (`if`, &c) and
+        # funtion calls, iterate over
+        # that condition, and extract
+        # parameters. If it is a ValueAST,
+        # just add it to the parameter list.
+        # if it is another form, a function,
+        # or some item, extract it and set
+        # *THAT* as the execution, with only
+        # the result of that item being returned
+        # and the original form being pushed to
+        # the stack
+
+
         if type(cur_ast) is ValueAST:
             res = cur_ast
         elif type(cur_ast) is FunctionAST:
