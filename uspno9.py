@@ -858,8 +858,8 @@ class Eval(object):
 
             if condition.symbolic:
                 res = ForkPathExecution([cur_ast.condition == True,
-                                          cur_ast.condition != True],
-                                         [thenbranch, elsebranch])
+                                         cur_ast.condition != True],
+                                        [thenbranch, elsebranch])
             elif condition.value is True:
                 res = PathExecution(thenbranch, cur_ast.condition)
             else:
@@ -909,8 +909,8 @@ class Eval(object):
 
             if condition.symbolic:
                 res = ForkPathExecution([cur_ast.condition == True,
-                                          cur_ast.condition != True],
-                                         [body, None])
+                                         cur_ast.condition != True],
+                                        [body, None])
             elif condition.value is True:
                 res = PathExecution(body, cur_ast.condition)
             else:
