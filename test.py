@@ -134,3 +134,43 @@ print while0.to_sexpr()
 
 res, stack, env = vm0.microexecute(while0)
 print res
+
+print "\nfunction test\n====="
+# Let's build a new function...
+
+cond5 = FunctionCallAST("<=", [VarRefAST("bar"), VarRefAST("len")], bool)
+while1 = WhileAST(cond5, BeginAST(body))
+
+fnb0 = BeginAST([VariableDecAST("bar", ValueAST.new_integer(0)),
+                 while1])
+
+# need a way to represent ::void as a type...
+fn0 = FunctionAST("boo", [VarRefAST("len", int)], fnb0, VoidAST)
+
+print "Boo should not be in the environment before hand:"
+print env.getOrNone("boo")
+
+res, stack, env = vm0.microexecute(fn0)
+
+print "Boo should be in the environment after execution:"
+print env.getOrNone("boo")
+
+print "\nBefore execution, these should be simple:"
+print res
+print stack
+print env
+
+(res,) = env.getOrNone("boo")
+
+print "\nFunction name: {0}, single parameter: {1}".format(res.name, res.params)
+print "function body:", res.body.to_sexpr()
+
+print "\nLet's execute that function:"
+fncall0 = FunctionCallAST("boo", [ValueAST.new_integer(1)], VoidAST)
+
+res, stack, env = vm0.microexecute(fncall0)
+
+print res
+print stack
+print env
+env.walk()

@@ -5,6 +5,19 @@ class AST(object):
     pass
 
 
+class VoidAST(AST):
+    # a disjoint type meant to represent
+    # when something returns no value
+    def to_sexpr(self):
+        return "#void"
+
+    def to_dexpr(self):
+        return "#void"
+
+    def __str__(self):
+        return "#void"
+
+
 class FunctionAST(AST):
     def __init__(self, name, params=None, body=None,
                  returntype=None, symbolic=False):
@@ -739,9 +752,24 @@ class EvalEnv(object):
         else:
             raise KeyError
 
+    def getOrNone(self, key):
+        res = None
+
+        try:
+            res = self.get(key)
+            return (res,)
+        except KeyError:
+            return None
+
     def set(self, key, value):
         self.members[key] = value
 
+    def walk(self, cnt=0):
+        print("environment frame {0}".format(cnt))
+        print self.members
+
+        if self.parent is not None:
+            self.parent.walk(cnt + 1)
 
 class Eval(object):
     def __init__(self, asts, env):
@@ -768,6 +796,15 @@ class Eval(object):
             self.env = EvalEnv(env)
         else:
             self.env = env
+
+    def enclose_env(self, env, srcparams, dstparams):
+        new_env = {}
+
+        if len(srcparams) != len(dstparams):
+            return None
+        for idx in range(0, len(srcparams)):
+            new_env[dstparams[idx].variable] = srcparams[idx]
+        return EvalEnv(new_env, env)
 
     def execute(self):
         # walk over each AST, and execute it via
@@ -815,12 +852,11 @@ class Eval(object):
         # and the original form being pushed to
         # the stack
 
-
         if type(cur_ast) is ValueAST:
             res = cur_ast
         elif type(cur_ast) is FunctionAST:
-            self.env.set(cur_ast.name, cur_ast.value)
-            res = cur_ast
+            self.env.set(cur_ast.name, cur_ast)
+            res = VoidAST()
         elif type(cur_ast) is FunctionCallAST:
             new_ast = FunctionCallAST(cur_ast.name,
                                       [],
@@ -835,7 +871,18 @@ class Eval(object):
                         new_ast.params.append(ValueAST(None))
                 else:
                     new_ast.params.append(param)
-            res = self.callfn(new_ast)
+            if cur_ast.name in self.builtins:
+                res = self.callfn(new_ast)
+            elif muenv.getOrNone(new_ast.name) is not None:
+                # man walrus would be nice ^^^
+                fn = muenv.get(new_ast.name)
+                res = fn.body
+                muenv = self.enclose_env(muenv, new_ast.params, fn.params)
+            else:
+                # we have a purely symbolic function call here, we have no
+                # inkling about types or other information, so we can just
+                # symbolicate the result & type...
+                pass
         elif type(cur_ast) is VariableDecAST:
             self.env.set(cur_ast.name, cur_ast.value)
             res = cur_ast
@@ -935,6 +982,7 @@ class Eval(object):
                                         [body, None])
             elif condition.value is True:
                 res = PathExecution(body, cur_ast.condition)
+                mustack.append(cur_ast)
             else:
                 res = None
         elif type(cur_ast) is ForAST:
@@ -953,7 +1001,7 @@ class Eval(object):
             except Exception:
                 res = ValueAST(None)
 
-        return (res, muenv, mustack)
+        return (res, mustack, muenv)
 
     def callfn(self, cur_ast):
         # this is a first rough cut of calling
