@@ -886,6 +886,16 @@ class Eval(object):
         elif type(cur_ast) is VariableDecAST:
             self.env.set(cur_ast.name, cur_ast.value)
             res = cur_ast
+        elif type(cur_ast) is SetValueAST:
+            if self.env.getOrNone(cur_ast.variable) is not None:
+                self.env.set(cur_ast.variable, cur_ast.value)
+            else:
+                # I'm not sure we want this. We probably actually want
+                # to signal that we are executing a set! on a variable
+                # that is heretofore undefined, and still set it. This
+                # way we can execute code snippets that may have been
+                # extracted from elsewhere...
+                raise KeyError
         elif type(cur_ast) is IfAST:
             condition = cur_ast.condition
             thenbranch = cur_ast.thenbranch
