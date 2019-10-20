@@ -695,6 +695,26 @@ class VarRefAST(AST):
     def to_dexpr(self):
         pass
 
+class ReturnAST(AST):
+    def __init__(self, value):
+        self.value = value
+
+    def to_sexpr(self):
+        ret = ["return"]
+        ret.append(self.value.to_sexpr())
+        return "(" + " ".join(ret) + ")"
+
+
+class BreakContinueAST(AST):
+    def __init__(self, isbreakp=False):
+        self.isbreakp = isbreakp
+
+    def to_sexpr(self):
+        if self.isbreakp:
+            return "(break)"
+        else:
+            return "(continue)"
+
 
 class SetValueAST(AST):
     def __init__(self, variable, value):
@@ -890,12 +910,21 @@ class Eval(object):
             if self.env.getOrNone(cur_ast.variable) is not None:
                 self.env.set(cur_ast.variable, cur_ast.value)
             else:
+                # NOTE
                 # I'm not sure we want this. We probably actually want
                 # to signal that we are executing a set! on a variable
                 # that is heretofore undefined, and still set it. This
                 # way we can execute code snippets that may have been
                 # extracted from elsewhere...
                 raise KeyError
+        elif type(cur_ast) is ReturnAST:
+            pass
+        elif type(cur_ast) is BreakContinueAST:
+            # this one is p simple: we want the
+            # top-level interpreter to deal with
+            # the frame of what needs to be popped
+            # off or not...
+            res = cur_ast
         elif type(cur_ast) is IfAST:
             condition = cur_ast.condition
             thenbranch = cur_ast.thenbranch
