@@ -20,11 +20,13 @@ class VoidAST(AST):
 
 class FunctionAST(AST):
     def __init__(self, name, params=None, body=None,
-                 returntype=None, symbolic=False):
+                 returntype=None, symbolic=False,
+                 inline=False):
         self.name = name
         self.params = params
         self.returntype = returntype
         self.userdefined = True
+        self.inline = inline
         if body is None:
             self.body = None
             self.symbolic = True
@@ -94,6 +96,18 @@ class FunctionCallAST(AST):
 
     def to_dexpr(self):
         pass
+
+
+class NativeCallAST(AST):
+    # a simple class to wrap and
+    # call native function
+    def __init__(self, name, params, fn):
+        self.name = name
+        self.params = params
+        self.fn = fn
+
+    def apply(self, userdata):
+        apply(self.fn, params)
 
 
 class VariableDecAST(AST):
@@ -695,6 +709,7 @@ class VarRefAST(AST):
     def to_dexpr(self):
         pass
 
+
 class ReturnAST(AST):
     def __init__(self, value):
         self.value = value
@@ -752,6 +767,74 @@ class ForkPathExecution(object):
     def __init__(self, constraints, asts):
         self.constraints = constraints
         self.asts = asts
+
+
+class DelayedExecution(object):
+    # this object holds a form that
+    # has been delayed, and an index
+    # into that delayed form. We may
+    # then resume rebuilding the new
+    # AST, from this delayed transaction
+    # this is meant to support apply-eval
+    # in micorexecution in a simple way
+
+    def __init__(self, form, startindex=0):
+        self.form = form
+        self.startindex = startindex
+        self.new_form = copy.deepcopy(form)
+        self.ftype = type(new_form)
+
+    def force(self, result):
+        # it would be nice to have a
+        # index method for each AST,
+        # but really for here we just
+        # overwrite original value in
+        # the resulting AST
+        if (self.ftype is IfAST or
+            self.ftype is WhileAST or
+            self.ftype is ForAST):
+            self.new_form.condition = result
+        elif self.ftype is FunctionCallAST:
+            self.params[self.startindex] = result
+        elif (self.ftype is BeginAST or
+              self.ftype is ExplicitBeginAST):
+            self.body[self.startindex] = result
+        elif (self.ftype is SetValueAST or
+              self.ftype is ReturnAST):
+            self.new_form.value = result
+
+        self.startindex += 1
+
+    def done_delaying_p(self):
+        if self.ftype in [IfAST, WhileAST, ForAST, SetValueAST, ReturnAST]:
+            return self.startindex > 0
+        elif self.ftype in [BeginAST, ExplicitBeginAST]:
+            return self.startindex >= len(self.cur_ast.body)
+        elif self.ftype is FunctionCallAST:
+            return self.startindex >= len(self.cur_ast.params)
+        return True
+
+    def yield_execution(self):
+        if self.ftype in [IfAST, WhileAST, ForAST, SetValueAST, ReturnAST]:
+            if self.startindex > 0:
+                return None
+            elif self.ftype in [SetValueAST, ReturnAST]:
+                return self.value
+            else:
+                return self.cur_ast.condition
+        elif self.ftype in [BeginAST, ExplicitBeginAST]:
+            if self.startindex < len(self.cur_ast.body):
+                return self.cur_ast.body[self.startindex]
+        elif self.ftype is FunctionCallAST:
+            if self.startindex < len(self.cur_ast.params):
+                return self.cur_ast.params[self.startindex]
+        return None
+
+    def result_form(self):
+        return self.new_ast
+
+    def original_form(self):
+        return self.cur_ast
 
 
 class EvalEnv(object):
