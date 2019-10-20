@@ -148,19 +148,19 @@ fnb0 = BeginAST([VariableDecAST("bar", ValueAST.new_integer(0)),
 fn0 = FunctionAST("boo", [VarRefAST("len", int)], fnb0, VoidAST)
 
 print "Boo should not be in the environment before hand:"
-print env.getOrNone("boo")
+print env.get_or_none("boo")
 
 res, stack, env = vm0.microexecute(fn0)
 
 print "Boo should be in the environment after execution:"
-print env.getOrNone("boo")
+print env.get_or_none("boo")
 
 print "\nBefore execution, these should be simple:"
 print res
 print stack
 print env
 
-(res,) = env.getOrNone("boo")
+(res,) = env.get_or_none("boo")
 
 print "\nFunction name: {0}, single parameter: {1}".format(res.name, res.params)
 print "function body:", res.body.to_sexpr()

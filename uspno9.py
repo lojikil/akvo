@@ -1,4 +1,5 @@
 import uuid
+import copy
 
 
 class AST(object):
@@ -107,7 +108,7 @@ class NativeCallAST(AST):
         self.fn = fn
 
     def apply(self, userdata):
-        apply(self.fn, params)
+        apply(self.fn, userdata)
 
 
 class VariableDecAST(AST):
@@ -782,7 +783,7 @@ class DelayedExecution(object):
         self.form = form
         self.startindex = startindex
         self.new_form = copy.deepcopy(form)
-        self.ftype = type(new_form)
+        self.ftype = type(form)
 
     def force(self, result):
         # it would be nice to have a
@@ -791,8 +792,8 @@ class DelayedExecution(object):
         # overwrite original value in
         # the resulting AST
         if (self.ftype is IfAST or
-            self.ftype is WhileAST or
-            self.ftype is ForAST):
+           self.ftype is WhileAST or
+           self.ftype is ForAST):
             self.new_form.condition = result
         elif self.ftype is FunctionCallAST:
             self.params[self.startindex] = result
@@ -855,7 +856,7 @@ class EvalEnv(object):
         else:
             raise KeyError
 
-    def getOrNone(self, key):
+    def get_or_none(self, key):
         res = None
 
         try:
@@ -873,6 +874,7 @@ class EvalEnv(object):
 
         if self.parent is not None:
             self.parent.walk(cnt + 1)
+
 
 class Eval(object):
     def __init__(self, asts, env):
@@ -976,7 +978,7 @@ class Eval(object):
                     new_ast.params.append(param)
             if cur_ast.name in self.builtins:
                 res = self.callfn(new_ast)
-            elif muenv.getOrNone(new_ast.name) is not None:
+            elif muenv.get_or_none(new_ast.name) is not None:
                 # man walrus would be nice ^^^
                 fn = muenv.get(new_ast.name)
                 res = fn.body
@@ -990,7 +992,7 @@ class Eval(object):
             self.env.set(cur_ast.name, cur_ast.value)
             res = cur_ast
         elif type(cur_ast) is SetValueAST:
-            if self.env.getOrNone(cur_ast.variable) is not None:
+            if self.env.get_or_none(cur_ast.variable) is not None:
                 self.env.set(cur_ast.variable, cur_ast.value)
             else:
                 # NOTE
