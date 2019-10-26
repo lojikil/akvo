@@ -99,9 +99,21 @@ class FunctionCallAST(AST):
         pass
 
     def _gen_var(self, form):
+        # returns a new `define` form
+        # with a freshsym name and the
+        # `form` parameter as the value.
+        # maybe should take an optional
+        # source name so that we can bind
+        # to known parameters (like named
+        # params in user functions)
         pass
 
     def _gen_var_ref(self, form):
+        # accept a VarAST (a variable
+        # declaration) and return a
+        # VarRefAST, with the type and
+        # whatnot properly set from the
+        # VarAST.
         pass
 
     def to_anf(self):
@@ -122,6 +134,15 @@ class FunctionCallAST(AST):
         # this allows us to analyze the environment
         # and see the return results for calls, as
         # well as simplifies execution models
+        #
+        # I've thought about just adding a `let` form
+        # here, but I'd just end up doing alpha-conversion
+        # to a freshsym + `def` anyway I think, since that
+        # is relatively more practical than attempting to
+        # add env-frames all the time (which will just be
+        # flattened for any relatively normal analysis
+        # anyway)
+
         nuvars = []
         finalcall = FunctionCallAST(name=self.name, params=None,
                                     returntype=self.returntype,
