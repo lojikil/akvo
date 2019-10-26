@@ -98,6 +98,57 @@ class FunctionCallAST(AST):
     def to_dexpr(self):
         pass
 
+    def _gen_var(self, form):
+        pass
+
+    def _gen_var_ref(self, form):
+        pass
+
+    def to_anf(self):
+        # recursively inflate a function call from
+        # a single call with multiple parameters
+        # that may or may not be function calls
+        # into a list of variable binds and function
+        # calls
+        #
+        # e.g. turn `(call + (call * (variable z) 10) 11)`
+        # into:
+        #
+        # ```scheme
+        # (define a (call * (variable z) 10))
+        # (call + a 11)
+        # ```
+        #
+        # this allows us to analyze the environment
+        # and see the return results for calls, as
+        # well as simplifies execution models
+        nuvars = []
+        finalcall = FunctionCallAST(name=self.name, params=None,
+                                    returntype=self.returntype,
+                                    symbolic=self.symbolic)
+
+        for param in self.params:
+            if type(param) is FunctionCallAST:
+                tmpvars, tmpres = param.to_anf()
+                nuvars.extend(tmpvars)
+                nextvar = self._gen_var(tmpres)
+                nuvars.append(nextvar)
+                finalcall.params.append(self._gen_var_ref(nextvar))
+            elif type(param) in [IfAST, WhileAST, ForAST, CondAST]:
+                nextvar = self._gen_var(param)
+                nuvars.append(nextvar)
+                finalcall.params.append(self._gen_var_ref(nextvar))
+            elif type(param) is FunctionAST:
+                # an anonymous funciton, we need to lambda lift it
+                continue
+            else:
+                finalcall.params.append(param)
+
+        return nuvars, finalcall
+
+    def from_anf(self):
+        pass
+
 
 class NativeCallAST(AST):
     # a simple class to wrap and
