@@ -1,6 +1,11 @@
 import uuid
 import copy
 
+# ugly hack; I guess the AST object
+# could capture that for me, I need
+# to stew on that a bit more...
+current_count = 0
+
 
 class AST(object):
     pass
@@ -106,7 +111,27 @@ class FunctionCallAST(AST):
         # source name so that we can bind
         # to known parameters (like named
         # params in user functions)
-        pass
+        #
+        # so, I could just randomly generate
+        # these, but I want to make runs
+        # reproducible (save for UUIDs, of
+        # course). So, it may make since to
+        # just make this linearly and monotonically
+        # increase over the course of things.
+        # need to keep a counter running,
+        # of course...
+
+        global current_count  # hate this, lol
+        name = "res_{0}".format(current_count)
+        current_count += 1
+
+        # we probably could reach into form
+        # a bit more, but for now let's just
+        # do the simplest thing possible
+
+        res = VariableDecAST(name, value=form)
+        res.trace = form.to_sexpr()
+        return res
 
     def _gen_var_ref(self, form):
         # accept a VarAST (a variable
@@ -114,7 +139,7 @@ class FunctionCallAST(AST):
         # VarRefAST, with the type and
         # whatnot properly set from the
         # VarAST.
-        pass
+        return VarRefAST(form.name, vtype=form.vtype, symbolic=form.symbolic)
 
     def to_anf(self):
         # recursively inflate a function call from
@@ -144,7 +169,7 @@ class FunctionCallAST(AST):
         # anyway)
 
         nuvars = []
-        finalcall = FunctionCallAST(name=self.name, params=None,
+        finalcall = FunctionCallAST(name=self.name, params=[],
                                     returntype=self.returntype,
                                     symbolic=self.symbolic)
 
