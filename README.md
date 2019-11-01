@@ -19,8 +19,10 @@ This is meant to be a test bed for exploring ideas, rather than an industrial-qu
 - a framework like [Facebook's pfff](https://github.com/facebookarchive/pfff) for control-flow graphs, source to source translation, &c.
 - the basis of something like ["Static analysis at scale at Instagram"](https://instagram-engineering.com/static-analysis-at-scale-an-instagram-story-8f498ab71a0c)
 - the ability to provide ["fixes" to code, like this tweet](https://twitter.com/moyix/status/1177384798727204864?s=20) automatically [paper link](https://srg.doc.ic.ac.uk/files/papers/loops-pldi-19.pdf)
+- Semantic patching like [Comby](https://comby.dev) and [Coccinelle](http://coccinelle.lip6.fr/)
+- Visualization similar to [this paper on visualizing Abstract Abstract Machines](http://kyleheadley.github.io/PHDWebsite/2019-headley-aamviz-scheme-submit.pdf), with [an implementation here](https://analysisviz.gilray.net)
 
-This will also be the basis of my talk at [GrrCon](http://grrcon.com/presentations/#lojikil).
+This will also be the basis of [my talk](https://github.com/lojikil/fuzzy-tyrant) at [GrrCon](http://grrcon.com/presentations/#lojikil).
 
 # Targets
 
