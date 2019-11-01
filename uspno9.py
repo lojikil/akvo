@@ -130,7 +130,6 @@ class FunctionCallAST(AST):
         # do the simplest thing possible
 
         res = VariableDecAST(name, value=form)
-        res.trace = form.to_sexpr()
         return res
 
     def _gen_var_ref(self, form):
@@ -217,6 +216,11 @@ class VariableDecAST(AST):
             self.vtype = vtype
         else:
             if type(value) is ValueAST:
+                self.value = value
+            elif isinstance(value, AST):
+                # separating this case here
+                # because we may want to do
+                # something with it soon...
                 self.value = value
             else:
                 self.value = ValueAST(vtype, value=value)

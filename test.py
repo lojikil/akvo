@@ -179,6 +179,7 @@ print "\nANF testing...\n====="
 fc0 = FunctionCallAST("*", [ValueAST.new_integer(10), ValueAST.new_integer(20)])
 fc1 = FunctionCallAST("/", [ValueAST.new_integer(12), ValueAST.new_integer(4)])
 fc2 = FunctionCallAST("+", [fc0, fc1])
+fc3 = FunctionCallAST("-", [fc2, ValueAST.new_integer(1)])
 
 print "original form:"
 
@@ -186,6 +187,18 @@ print fc2.to_sexpr()
 
 print "\nANF variant:"
 var, result = fc2.to_anf()
+
+for v in var:
+    print v.to_sexpr()
+
+print result.to_sexpr()
+
+print "\noriginal form:"
+
+print fc3.to_sexpr()
+
+print "\nANF variant:"
+var, result = fc3.to_anf()
 
 for v in var:
     print v.to_sexpr()
