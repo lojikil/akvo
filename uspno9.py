@@ -896,6 +896,534 @@ class ValueAST(AST):
 
         return rv
 
+    def __rshift__(self, other):
+        rv = ValueAST(None)
+
+        self_trace = "(" + " ".join(self.trace) + ")"
+
+        if type(other) is ValueAST:
+            other_trace = " ".join(other.trace)
+        else:
+            other_trace = str(other)
+
+        other_trace = "({0})".format(other_trace)
+
+        if self.symbolic is False and type(other) is not ValueAST:
+            rv.value = self.value >> other
+            rv.vtype = type(rv.value)
+            rv.trace = [self_trace, ">>", other_trace]
+            rv.symbolic = False
+        elif (not self.symbolic and
+              type(other) is ValueAST and
+              not other.symbolic):
+            rv.value = self.value >> other.value
+            rv.vtype = type(rv.value)
+            rv.trace = [self_trace, ">>", other_trace]
+            rv.symbolic = False
+        elif self.symbolic or other.symbolic:
+            # here we know that self is symbolic
+            rv.vtype = self.vtype  # is this correct?
+            rv.symbolic = True
+            rv.value = rv.tag
+            rv.trace = [self_trace, ">>", other_trace]
+
+        return rv
+
+    def __rrshift__(self, other):
+        rv = ValueAST(None)
+
+        self_trace = "(" + " ".join(self.trace) + ")"
+
+        if type(other) is ValueAST:
+            other_trace = " ".join(other.trace)
+        else:
+            other_trace = str(other)
+
+        other_trace = "({0})".format(other_trace)
+
+        if self.symbolic is False and type(other) is not ValueAST:
+            rv.value = other >> self.value
+            rv.vtype = type(rv.value)
+            rv.trace = [other_trace, ">>", self_trace]
+            rv.symbolic = False
+        elif (not self.symbolic and
+              type(other) is ValueAST and
+              not other.symbolic):
+            rv.value = other.value >> self.value
+            rv.vtype = type(rv.value)
+            rv.trace = [other_trace, ">>", self_trace]
+            rv.symbolic = False
+        elif self.symbolic or other.symbolic:
+            # here we know that self is symbolic
+            rv.vtype = self.vtype  # is this correct?
+            rv.symbolic = True
+            rv.value = rv.tag
+            rv.trace = [other_trace, ">>", self_trace]
+
+        return rv
+
+    def __lshift__(self, other):
+        rv = ValueAST(None)
+
+        self_trace = "(" + " ".join(self.trace) + ")"
+
+        if type(other) is ValueAST:
+            other_trace = " ".join(other.trace)
+        else:
+            other_trace = str(other)
+
+        other_trace = "({0})".format(other_trace)
+
+        if self.symbolic is False and type(other) is not ValueAST:
+            rv.value = self.value << other
+            rv.vtype = type(rv.value)
+            rv.trace = [self_trace, "<<", other_trace]
+            rv.symbolic = False
+        elif (not self.symbolic and
+              type(other) is ValueAST and
+              not other.symbolic):
+            rv.value = self.value << other.value
+            rv.vtype = type(rv.value)
+            rv.trace = [self_trace, "<<", other_trace]
+            rv.symbolic = False
+        elif self.symbolic or other.symbolic:
+            # here we know that self is symbolic
+            rv.vtype = self.vtype  # is this correct?
+            rv.symbolic = True
+            rv.value = rv.tag
+            rv.trace = [self_trace, "<<", other_trace]
+
+        return rv
+
+    def __rlshift__(self, other):
+        rv = ValueAST(None)
+
+        self_trace = "(" + " ".join(self.trace) + ")"
+
+        if type(other) is ValueAST:
+            other_trace = " ".join(other.trace)
+        else:
+            other_trace = str(other)
+
+        other_trace = "({0})".format(other_trace)
+
+        if self.symbolic is False and type(other) is not ValueAST:
+            rv.value = other << self.value
+            rv.vtype = type(rv.value)
+            rv.trace = [other_trace, "<<", self_trace]
+            rv.symbolic = False
+        elif (not self.symbolic and
+              type(other) is ValueAST and
+              not other.symbolic):
+            rv.value = other.value << self.value
+            rv.vtype = type(rv.value)
+            rv.trace = [other_trace, "<<", self_trace]
+            rv.symbolic = False
+        elif self.symbolic or other.symbolic:
+            # here we know that self is symbolic
+            rv.vtype = self.vtype  # is this correct?
+            rv.symbolic = True
+            rv.value = rv.tag
+            rv.trace = [other_trace, "<<", self_trace]
+
+        return rv
+
+    def __xor__(self, other):
+        rv = ValueAST(None)
+
+        self_trace = "(" + " ".join(self.trace) + ")"
+
+        if type(other) is ValueAST:
+            other_trace = " ".join(other.trace)
+        else:
+            other_trace = str(other)
+
+        other_trace = "({0})".format(other_trace)
+
+        if self.symbolic is False and type(other) is not ValueAST:
+            rv.value = self.value ^ other
+            rv.vtype = type(rv.value)
+            rv.trace = [self_trace, "^", other_trace]
+            rv.symbolic = False
+        elif (not self.symbolic and
+              type(other) is ValueAST and
+              not other.symbolic):
+            rv.value = self.value ^ other.value
+            rv.vtype = type(rv.value)
+            rv.trace = [self_trace, "^", other_trace]
+            rv.symbolic = False
+        elif self.symbolic or other.symbolic:
+            # here we know that self is symbolic
+            rv.vtype = self.vtype  # is this correct?
+            rv.symbolic = True
+            rv.value = rv.tag
+            rv.trace = [self_trace, "^", other_trace]
+
+        return rv
+
+    def __rxor__(self, other):
+        rv = ValueAST(None)
+
+        self_trace = "(" + " ".join(self.trace) + ")"
+
+        if type(other) is ValueAST:
+            other_trace = " ".join(other.trace)
+        else:
+            other_trace = str(other)
+
+        other_trace = "({0})".format(other_trace)
+
+        if self.symbolic is False and type(other) is not ValueAST:
+            rv.value = other ^ self.value
+            rv.vtype = type(rv.value)
+            rv.trace = [other_trace, "^", self_trace]
+            rv.symbolic = False
+        elif (not self.symbolic and
+              type(other) is ValueAST and
+              not other.symbolic):
+            rv.value = other.value ^ self.value
+            rv.vtype = type(rv.value)
+            rv.trace = [other_trace, "^", self_trace]
+            rv.symbolic = False
+        elif self.symbolic or other.symbolic:
+            # here we know that self is symbolic
+            rv.vtype = self.vtype  # is this correct?
+            rv.symbolic = True
+            rv.value = rv.tag
+            rv.trace = [other_trace, "^", self_trace]
+
+        return rv
+
+    def __or__(self, other):
+        rv = ValueAST(None)
+
+        self_trace = "(" + " ".join(self.trace) + ")"
+
+        if type(other) is ValueAST:
+            other_trace = " ".join(other.trace)
+        else:
+            other_trace = str(other)
+
+        other_trace = "({0})".format(other_trace)
+
+        if self.symbolic is False and type(other) is not ValueAST:
+            rv.value = self.value | other
+            rv.vtype = type(rv.value)
+            rv.trace = [self_trace, "|", other_trace]
+            rv.symbolic = False
+        elif (not self.symbolic and
+              type(other) is ValueAST and
+              not other.symbolic):
+            rv.value = self.value | other.value
+            rv.vtype = type(rv.value)
+            rv.trace = [self_trace, "|", other_trace]
+            rv.symbolic = False
+        elif self.symbolic or other.symbolic:
+            # here we know that self is symbolic
+            rv.vtype = self.vtype  # is this correct?
+            rv.symbolic = True
+            rv.value = rv.tag
+            rv.trace = [self_trace, "|", other_trace]
+
+        return rv
+
+    def __ror__(self, other):
+        rv = ValueAST(None)
+
+        self_trace = "(" + " ".join(self.trace) + ")"
+
+        if type(other) is ValueAST:
+            other_trace = " ".join(other.trace)
+        else:
+            other_trace = str(other)
+
+        other_trace = "({0})".format(other_trace)
+
+        if self.symbolic is False and type(other) is not ValueAST:
+            rv.value = other | self.value
+            rv.vtype = type(rv.value)
+            rv.trace = [other_trace, "|", self_trace]
+            rv.symbolic = False
+        elif (not self.symbolic and
+              type(other) is ValueAST and
+              not other.symbolic):
+            rv.value = other.value | self.value
+            rv.vtype = type(rv.value)
+            rv.trace = [other_trace, "|", self_trace]
+            rv.symbolic = False
+        elif self.symbolic or other.symbolic:
+            # here we know that self is symbolic
+            rv.vtype = self.vtype  # is this correct?
+            rv.symbolic = True
+            rv.value = rv.tag
+            rv.trace = [other_trace, "|", self_trace]
+
+        return rv
+
+    def __and__(self, other):
+        rv = ValueAST(None)
+
+        self_trace = "(" + " ".join(self.trace) + ")"
+
+        if type(other) is ValueAST:
+            other_trace = " ".join(other.trace)
+        else:
+            other_trace = str(other)
+
+        other_trace = "({0})".format(other_trace)
+
+        if self.symbolic is False and type(other) is not ValueAST:
+            rv.value = self.value & other
+            rv.vtype = type(rv.value)
+            rv.trace = [self_trace, "&", other_trace]
+            rv.symbolic = False
+        elif (not self.symbolic and
+              type(other) is ValueAST and
+              not other.symbolic):
+            rv.value = self.value & other.value
+            rv.vtype = type(rv.value)
+            rv.trace = [self_trace, "&", other_trace]
+            rv.symbolic = False
+        elif self.symbolic or other.symbolic:
+            # here we know that self is symbolic
+            rv.vtype = self.vtype  # is this correct?
+            rv.symbolic = True
+            rv.value = rv.tag
+            rv.trace = [self_trace, "&", other_trace]
+
+        return rv
+
+    def __rand__(self, other):
+        rv = ValueAST(None)
+
+        self_trace = "(" + " ".join(self.trace) + ")"
+
+        if type(other) is ValueAST:
+            other_trace = " ".join(other.trace)
+        else:
+            other_trace = str(other)
+
+        other_trace = "({0})".format(other_trace)
+
+        if self.symbolic is False and type(other) is not ValueAST:
+            rv.value = other & self.value
+            rv.vtype = type(rv.value)
+            rv.trace = [other_trace, "&", self_trace]
+            rv.symbolic = False
+        elif (not self.symbolic and
+              type(other) is ValueAST and
+              not other.symbolic):
+            rv.value = other.value & self.value
+            rv.vtype = type(rv.value)
+            rv.trace = [other_trace, "&", self_trace]
+            rv.symbolic = False
+        elif self.symbolic or other.symbolic:
+            # here we know that self is symbolic
+            rv.vtype = self.vtype  # is this correct?
+            rv.symbolic = True
+            rv.value = rv.tag
+            rv.trace = [other_trace, "&", self_trace]
+
+        return rv
+
+    def __mod__(self, other):
+        rv = ValueAST(None)
+
+        self_trace = "(" + " ".join(self.trace) + ")"
+
+        if type(other) is ValueAST:
+            other_trace = " ".join(other.trace)
+        else:
+            other_trace = str(other)
+
+        other_trace = "({0})".format(other_trace)
+
+        if self.symbolic is False and type(other) is not ValueAST:
+            rv.value = self.value % other
+            rv.vtype = type(rv.value)
+            rv.trace = [self_trace, "%", other_trace]
+            rv.symbolic = False
+        elif (not self.symbolic and
+              type(other) is ValueAST and
+              not other.symbolic):
+            rv.value = self.value % other.value
+            rv.vtype = type(rv.value)
+            rv.trace = [self_trace, "%", other_trace]
+            rv.symbolic = False
+        elif self.symbolic or other.symbolic:
+            # here we know that self is symbolic
+            rv.vtype = self.vtype  # is this correct?
+            rv.symbolic = True
+            rv.value = rv.tag
+            rv.trace = [self_trace, "%", other_trace]
+
+        return rv
+
+    def __rmod__(self, other):
+        rv = ValueAST(None)
+
+        self_trace = "(" + " ".join(self.trace) + ")"
+
+        if type(other) is ValueAST:
+            other_trace = " ".join(other.trace)
+        else:
+            other_trace = str(other)
+
+        other_trace = "({0})".format(other_trace)
+
+        if self.symbolic is False and type(other) is not ValueAST:
+            rv.value = other % self.value
+            rv.vtype = type(rv.value)
+            rv.trace = [other_trace, "%", self_trace]
+            rv.symbolic = False
+        elif (not self.symbolic and
+              type(other) is ValueAST and
+              not other.symbolic):
+            rv.value = other.value % self.value
+            rv.vtype = type(rv.value)
+            rv.trace = [other_trace, "%", self_trace]
+            rv.symbolic = False
+        elif self.symbolic or other.symbolic:
+            # here we know that self is symbolic
+            rv.vtype = self.vtype  # is this correct?
+            rv.symbolic = True
+            rv.value = rv.tag
+            rv.trace = [other_trace, "%", self_trace]
+
+        return rv
+
+    def __truediv__(self, other):
+        rv = ValueAST(None)
+
+        self_trace = "(" + " ".join(self.trace) + ")"
+
+        if type(other) is ValueAST:
+            other_trace = " ".join(other.trace)
+        else:
+            other_trace = str(other)
+
+        other_trace = "({0})".format(other_trace)
+
+        if self.symbolic is False and type(other) is not ValueAST:
+            rv.value = self.value // other
+            rv.vtype = type(rv.value)
+            rv.trace = [self_trace, "//", other_trace]
+            rv.symbolic = False
+        elif (not self.symbolic and
+              type(other) is ValueAST and
+              not other.symbolic):
+            rv.value = self.value // other.value
+            rv.vtype = type(rv.value)
+            rv.trace = [self_trace, "//", other_trace]
+            rv.symbolic = False
+        elif self.symbolic or other.symbolic:
+            # here we know that self is symbolic
+            rv.vtype = self.vtype  # is this correct?
+            rv.symbolic = True
+            rv.value = rv.tag
+            rv.trace = [self_trace, "//", other_trace]
+
+        return rv
+
+    def __rtruediv__(self, other):
+        rv = ValueAST(None)
+
+        self_trace = "(" + " ".join(self.trace) + ")"
+
+        if type(other) is ValueAST:
+            other_trace = " ".join(other.trace)
+        else:
+            other_trace = str(other)
+
+        other_trace = "({0})".format(other_trace)
+
+        if self.symbolic is False and type(other) is not ValueAST:
+            rv.value = other // self.value
+            rv.vtype = type(rv.value)
+            rv.trace = [other_trace, "//", self_trace]
+            rv.symbolic = False
+        elif (not self.symbolic and
+              type(other) is ValueAST and
+              not other.symbolic):
+            rv.value = other.value // self.value
+            rv.vtype = type(rv.value)
+            rv.trace = [other_trace, "//", self_trace]
+            rv.symbolic = False
+        elif self.symbolic or other.symbolic:
+            # here we know that self is symbolic
+            rv.vtype = self.vtype  # is this correct?
+            rv.symbolic = True
+            rv.value = rv.tag
+            rv.trace = [other_trace, "//", self_trace]
+
+        return rv
+
+    def __divmod__(self, other):
+        rv = ValueAST(None)
+
+        self_trace = "(" + " ".join(self.trace) + ")"
+
+        if type(other) is ValueAST:
+            other_trace = " ".join(other.trace)
+        else:
+            other_trace = str(other)
+
+        other_trace = "({0})".format(other_trace)
+
+        if self.symbolic is False and type(other) is not ValueAST:
+            rv.value = divmod(self.value, other)
+            rv.vtype = type(rv.value)
+            rv.trace = ["divmod", self_trace, other_trace]
+            rv.symbolic = False
+        elif (not self.symbolic and
+              type(other) is ValueAST and
+              not other.symbolic):
+            rv.value = divmod(self.value, other.value)
+            rv.vtype = type(rv.value)
+            rv.trace = ["divmod", self_trace, other_trace]
+            rv.symbolic = False
+        elif self.symbolic or other.symbolic:
+            # here we know that self is symbolic
+            rv.vtype = self.vtype  # is this correct?
+            rv.symbolic = True
+            rv.value = rv.tag
+            rv.trace = ["divmod", self_trace, other_trace]
+
+        return rv
+
+    def __rdivmod__(self, other):
+        rv = ValueAST(None)
+
+        self_trace = "(" + " ".join(self.trace) + ")"
+
+        if type(other) is ValueAST:
+            other_trace = " ".join(other.trace)
+        else:
+            other_trace = str(other)
+
+        other_trace = "({0})".format(other_trace)
+
+        if self.symbolic is False and type(other) is not ValueAST:
+            rv.value = other / self.value
+            rv.vtype = type(rv.value)
+            rv.trace = [other_trace, "/", self_trace]
+            rv.symbolic = False
+        elif (not self.symbolic and
+              type(other) is ValueAST and
+              not other.symbolic):
+            rv.value = other.value / self.value
+            rv.vtype = type(rv.value)
+            rv.trace = [other_trace, "/", self_trace]
+            rv.symbolic = False
+        elif self.symbolic or other.symbolic:
+            # here we know that self is symbolic
+            rv.vtype = self.vtype  # is this correct?
+            rv.symbolic = True
+            rv.value = rv.tag
+            rv.trace = [other_trace, "/", self_trace]
+
+        return rv
+
 
 class IfAST(AST):
     def __init__(self, condition, thenbranch, elsebranch=None):
