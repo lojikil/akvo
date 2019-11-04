@@ -60,7 +60,7 @@ print k.trace, k.value, "\n", l.trace, l.value, "\n", m.trace, m.value
 
 Values in this Bigloo-like Scheme have several annotations:
 
-- is the value sybolic or concrete?
+- is the value symbolic or concrete?
 - is there a trace?
 - a tag (UUID) for each and every value within a program
 

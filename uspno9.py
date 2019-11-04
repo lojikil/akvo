@@ -2003,7 +2003,16 @@ class Eval(object):
 
 class ControlFlowGraph(object):
     def __init__(self, asts, env):
-        pass
+        self.asts = asts
+        self.env = env
+        # not sure how to encode graphs just yet per se
+        # certainly should be a cyclical graph, but it
+        # could just be a reference...
+        # additionally, we need to make sure that specific
+        # cases do not branch out; for example, two mutually
+        # recursive methods that call one another shouldn't
+        # result in the CFG exploding...
+        self.graph = {}
 
 
 class SExpressionReader(object):
