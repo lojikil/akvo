@@ -21,8 +21,9 @@ This is meant to be a test bed for exploring ideas, rather than an industrial-qu
 - the ability to provide ["fixes" to code, like this tweet](https://twitter.com/moyix/status/1177384798727204864?s=20) automatically [paper link](https://srg.doc.ic.ac.uk/files/papers/loops-pldi-19.pdf)
 - Semantic patching like [Comby](https://comby.dev) and [Coccinelle](http://coccinelle.lip6.fr/)
 - Visualization similar to [this paper on visualizing Abstract Abstract Machines](http://kyleheadley.github.io/PHDWebsite/2019-headley-aamviz-scheme-submit.pdf), with [an implementation here](https://analysisviz.gilray.net)
+- Something like [MonkeyType](https://github.com/Instagram/MonkeyType) to discover types at specific execution points within programs (even if they are `union` types)
 
-This will also be the basis of [my talk](https://github.com/lojikil/fuzzy-tyrant) at [GrrCon](http://grrcon.com/presentations/#lojikil).
+This was the basis of [my talk](https://github.com/lojikil/fuzzy-tyrant) at [GrrCon](http://grrcon.com/presentations/#lojikil).
 
 # Targets
 
