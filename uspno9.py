@@ -1744,7 +1744,17 @@ class Eval(object):
             ">=": lambda x, y: x >= y,
             "==": lambda x, y: x == y,
             "!=": lambda x, y: x != y,
-            "+": lambda x, y: x + y
+            "+": lambda x, y: x + y,
+            "*": lambda x, y: x * y,
+            "/": lambda x, y: x / y,
+            "//": lambda x, y: x // y,
+            "&": lambda x, y: x & y,
+            "|": lambda x, y: x | y,
+            "^": lambda x, y: x ^ y,
+            ">>": lambda x, y: x >> y,
+            "<<": lambda x, y: x << y,
+            "%": lambda x, y: x % y,
+            "divmod": lambda x, y: divmod(x, y)
         }
 
         # allow users to pass raw dicts,
@@ -2023,10 +2033,12 @@ class ControlFlowGraph(object):
         prevseen = set()
         graph = {}
         callstack = []
-        worklist = set()
+        # worklist = set()
+        curnode = None
 
         if type(start) is str:
             fstnode = self.env.get_or_none(start)
+            curnode = start
         elif isinstance(start, AST):
             fstnode = start
         else:
@@ -2051,7 +2063,12 @@ class ControlFlowGraph(object):
             if type(curitem) is FunctionCallAST:
                 # note this function call, unless
                 # it's something that's builtin...
-                pass
+                if curnode not in graph:
+                    graph[curnode] = set()
+                graph[curnode].add(curitem.name)
+                # now, we have to iterate over each
+                # item within the function call, to
+                # make sure we have those items here...
             elif type(curitem) is IfAST:
                 pass
             elif type(curitem) in [BeginAST, ExplicitBeginAST]:
@@ -2060,6 +2077,8 @@ class ControlFlowGraph(object):
                 pass
             elif type(curitem) in [SetValueAST, ReturnAST]:
                 pass
+
+            prevseen.add(curnode)
 
         pass
 
