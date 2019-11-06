@@ -2012,7 +2012,56 @@ class ControlFlowGraph(object):
         # cases do not branch out; for example, two mutually
         # recursive methods that call one another shouldn't
         # result in the CFG exploding...
-        self.graph = {}
+
+    def simple_cfg(self, start):
+        # a simple CFG recovery mechanism, without
+        # constrain discovery; basically, give me a
+        # list of calls from each function we pass
+        # through
+
+        fstnode = None
+        prevseen = set()
+        graph = {}
+        callstack = []
+        worklist = set()
+
+        if type(start) is str:
+            fstnode = self.env.get_or_none(start)
+        elif isinstance(start, AST):
+            fstnode = start
+        else:
+            return None
+
+        if type(fstnode) is FunctionCallAST:
+            # here, we need to look up the function
+            # we're calling, and review the body of
+            # *that* function. Also need to handle
+            # calling this on built-ins... we probably
+            # don't care if folks want to call builtins,
+            # as that will be extremely noisy...
+            pass
+        elif type(fstnode) in [BeginAST, ExplicitBeginAST]:
+            pass
+        elif type(fstnode) is FunctionAST:
+            pass
+
+        while len(callstack) > 0:
+            curitem = callstack.pop()
+
+            if type(curitem) is FunctionCallAST:
+                # note this function call, unless
+                # it's something that's builtin...
+                pass
+            elif type(curitem) is IfAST:
+                pass
+            elif type(curitem) in [BeginAST, ExplicitBeginAST]:
+                pass
+            elif type(curitem) in [ForAST, WhileAST]:
+                pass
+            elif type(curitem) in [SetValueAST, ReturnAST]:
+                pass
+
+        pass
 
 
 class SExpressionReader(object):
