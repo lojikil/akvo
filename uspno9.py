@@ -2069,14 +2069,19 @@ class ControlFlowGraph(object):
                 # now, we have to iterate over each
                 # item within the function call, to
                 # make sure we have those items here...
+                for pitem in curitem.params:
+                    if type(pitem) is not ValueAST:
+                        callstack.append(pitem)
             elif type(curitem) is IfAST:
-                pass
+                callstack.append(curitem.condition)
+                callstack.append(curitem.thenbranch)
+                callstack.append(curitem.elsebranch)
             elif type(curitem) in [BeginAST, ExplicitBeginAST]:
-                pass
+                callstack.extend(curitem.body)
             elif type(curitem) in [ForAST, WhileAST]:
-                pass
+                callstack.extend(curitem.body)
             elif type(curitem) in [SetValueAST, ReturnAST]:
-                pass
+                callstack.extend(curitem.value)
 
             prevseen.add(curnode)
 
