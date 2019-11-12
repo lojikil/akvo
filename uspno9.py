@@ -2085,7 +2085,7 @@ class ControlFlowGraph(object):
 
             prevseen.add(curnode)
 
-        pass
+        return (start, graph, prevseen)
 
 
 class SExpressionReader(object):
