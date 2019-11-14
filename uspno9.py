@@ -2079,6 +2079,9 @@ class ControlFlowGraph(object):
             elif type(curitem) in [BeginAST, ExplicitBeginAST]:
                 callstack.extend(curitem.body)
             elif type(curitem) in [ForAST, WhileAST]:
+                # we need to check both the body and
+                # the conditional expression for loops
+                callstack.append(curitem.condition)
                 callstack.extend(curitem.body)
             elif type(curitem) in [SetValueAST, ReturnAST]:
                 callstack.extend(curitem.value)
