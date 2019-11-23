@@ -204,3 +204,7 @@ for v in var:
     print v.to_sexpr()
 
 print result.to_sexpr()
+
+cfg0 = ControlFlowGraph(None, rootenv0)
+print cfg0.simple_cfg(fn0)
+

@@ -2040,7 +2040,9 @@ class ControlFlowGraph(object):
             fstnode = self.env.get_or_none(start)
             curnode = start
         elif isinstance(start, AST):
+            print "here?"
             fstnode = start
+            curnode = start
         else:
             return None
 
@@ -2052,13 +2054,15 @@ class ControlFlowGraph(object):
             # don't care if folks want to call builtins,
             # as that will be extremely noisy...
             pass
-        elif type(fstnode) in [BeginAST, ExplicitBeginAST]:
-            pass
-        elif type(fstnode) is FunctionAST:
-            pass
+        elif isinstance(fstnode, AST) and hasattr(fstnode, 'body'):
+            print "here?"
+            callstack.append(fstnode.body)
+        print fstnode, type(fstnode)
 
         while len(callstack) > 0:
             curitem = callstack.pop()
+
+            print "reviewing:", curitem
 
             if type(curitem) is FunctionCallAST:
                 # note this function call, unless
@@ -2082,9 +2086,9 @@ class ControlFlowGraph(object):
                 # we need to check both the body and
                 # the conditional expression for loops
                 callstack.append(curitem.condition)
-                callstack.extend(curitem.body)
+                callstack.append(curitem.body)
             elif type(curitem) in [SetValueAST, ReturnAST]:
-                callstack.extend(curitem.value)
+                callstack.append(curitem.value)
 
             prevseen.add(curnode)
 
