@@ -2095,9 +2095,22 @@ class ControlFlowGraph(object):
         return (start, graph, prevseen)
 
 
-class SExpressionReader(object):
-    pass
+class ExpressionReader(object):
+    def __init__(self, src):
+        self.src = src
 
 
-class DExpressionReader(object):
-    pass
+class SExpressionReader(ExpressionReader):
+    def read(self):
+        pass
+
+    def next(self):
+        pass
+
+
+class DExpressionReader(ExpressionReader):
+    def read(self):
+        pass
+
+    def next(self):
+        pass
