@@ -2095,6 +2095,87 @@ class ControlFlowGraph(object):
         return (start, graph, prevseen)
 
 
+class Lexeme(object):
+    # holds a Lexeme and has a bunch of
+    # helper methods. I'm attempting to
+    # avoid a huge hierarchy of Lexeme
+    # classes here...
+
+    def __init__(self, lexeme_value, lexeme_type):
+        self.lexeme_value = lexeme_value
+        self.lexeme_type = lexeme_type
+
+    @staticmethod
+    def new_key(lv):
+        return Lexeme(lv, 0)
+
+    def is_key(self):
+        return self.lexeme_type == 0
+
+    @staticmethod
+    def new_keyword(lv):
+        return Lexeme(lv, 1)
+
+    def is_keyword(self):
+        return self.lexeme_type == 1
+
+    @staticmethod
+    def new_string(lv):
+        return Lexeme(lv, 2)
+
+    def is_string(self):
+        return self.lexeme_type == 2
+
+    @staticmethod
+    def new_int(lv):
+        return Lexeme(lv, 3)
+
+    def is_int(self):
+        return self.lexeme_type == 3
+
+    @staticmethod
+    def new_hex(lv):
+        return Lexeme(lv, 4)
+
+    def is_hex(self):
+        return self.lexeme_type == 4
+
+    @staticmethod
+    def new_oct(lv):
+        return Lexeme(lv, 5)
+
+    def is_oct(self):
+        return self.lexeme_type == 5
+
+    @staticmethod
+    def new_bin(lv):
+        return Lexeme(lv, 6)
+
+    def is_bin(self):
+        return self.lexeme_type == 6
+
+    @staticmethod
+    def new_float(lv):
+        return Lexeme(lv, 7)
+
+    def is_float(self):
+        return self.lexeme_type == 7
+
+    @staticmethod
+    def new_char(lv):
+        return Lexeme(lv, 8)
+
+    def is_char(self):
+        return self.lexeme_type == 8
+
+    @staticmethod
+    def new_sym(lv):
+        return Lexeme(lv, 9)
+
+    def is_sym(self):
+        return self.lexeme_type == 9
+
+
 class ExpressionReader(object):
     def __init__(self, src):
         self.src = src
