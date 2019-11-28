@@ -2040,7 +2040,6 @@ class ControlFlowGraph(object):
             fstnode = self.env.get_or_none(start)
             curnode = start
         elif isinstance(start, AST):
-            print "here?"
             fstnode = start
             curnode = start
         else:
@@ -2055,7 +2054,6 @@ class ControlFlowGraph(object):
             # as that will be extremely noisy...
             pass
         elif isinstance(fstnode, AST) and hasattr(fstnode, 'body'):
-            print "here?"
             callstack.append(fstnode.body)
         print fstnode, type(fstnode)
 
@@ -2180,10 +2178,51 @@ class ExpressionReader(object):
     def __init__(self, src):
         self.src = src
 
+		# May not be the best for large
+		# buffers, but it does allow us
+		# a simple mechanism for reading
+		if type(src) is str:
+			self.buffer = src
+		else:
+			self.buffer = src.read()
+
+		self.curpos = 0
+
 
 class SExpressionReader(ExpressionReader):
     def read(self):
-        pass
+		if self.buffer[self.curpos] is "(":
+			return self.read_expression()
+        elif self.buffer[self.curpos] is "[":
+            return self.read_array()
+        # need end detection like #\] and such
+        # should return a Lexeme there...
+		elif self.buffer[self.curpos] is "\"":
+			return self.read_string()
+		elif self.buffer[self.curpos] is "#":
+			return self.read_sharp()
+		elif self.buffer[self.curpos] is "'":
+			# this isn't needed, since we don't
+			# really need quoted things in this
+			# Scheme, but may as well have it,
+			# since I'm sure eventually I'll add
+			# some sort of macro...
+			return self.read_quote()
+		elif self.buffer[self.curpos].isdigit():
+            # this should dispatch for all numeric
+            # types in this unnamed Scheme...
+            # - int: 99
+            # - float: 9.9
+            # - complex: +9i-9
+            # - hex: 0x63
+            # - oct: 0o143
+            # - bin: 0b1100011
+            return self.read_numeric()
+		else:
+			raise "whoops"
+
+	def read_expression(self):
+		pass
 
     def next(self):
         pass
