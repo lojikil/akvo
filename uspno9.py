@@ -2177,6 +2177,7 @@ class Lexeme(object):
 class ExpressionReader(object):
     def __init__(self, src):
         self.src = src
+        self.whitespace = [" ", "\t", "\n", "\r"]
 
 		# May not be the best for large
 		# buffers, but it does allow us
@@ -2188,9 +2189,19 @@ class ExpressionReader(object):
 
 		self.curpos = 0
 
+    def iswhite(self, c):
+        return c in self.whitespace
+
 
 class SExpressionReader(ExpressionReader):
     def read(self):
+
+        # eat whitespace; we could just trim(),
+        # but that would miss interstitial
+        # whitespace, and would be a bit ineffiecient
+        while self.iswhite(self.buffer[self.curpos]):
+            self.curpos += 1
+
 		if self.buffer[self.curpos] is "(":
 			return self.read_expression()
         elif self.buffer[self.curpos] is "[":
@@ -2219,10 +2230,21 @@ class SExpressionReader(ExpressionReader):
             # - bin: 0b1100011
             return self.read_numeric()
 		else:
-			raise "whoops"
+			return self.read_symbol()
 
 	def read_expression(self):
 		pass
+
+    def read_numeric(self):
+        pass
+
+    def read_array(self):
+        pass
+
+    def read_string(self):
+        pass
+
+    def read_symbol(self):
 
     def next(self):
         pass
