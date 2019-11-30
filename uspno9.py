@@ -2179,15 +2179,15 @@ class ExpressionReader(object):
         self.src = src
         self.whitespace = [" ", "\t", "\n", "\r"]
 
-		# May not be the best for large
-		# buffers, but it does allow us
-		# a simple mechanism for reading
-		if type(src) is str:
-			self.buffer = src
-		else:
-			self.buffer = src.read()
+        # May not be the best for large
+        # buffers, but it does allow us
+        # a simple mechanism for reading
+        if type(src) is str:
+            self.buffer = src
+        else:
+            self.buffer = src.read()
 
-		self.curpos = 0
+        self.curpos = 0
 
     def iswhite(self, c):
         return c in self.whitespace
@@ -2202,24 +2202,24 @@ class SExpressionReader(ExpressionReader):
         while self.iswhite(self.buffer[self.curpos]):
             self.curpos += 1
 
-		if self.buffer[self.curpos] is "(":
-			return self.read_expression()
+        if self.buffer[self.curpos] is "(":
+            return self.read_expression()
         elif self.buffer[self.curpos] is "[":
             return self.read_array()
         # need end detection like #\] and such
         # should return a Lexeme there...
-		elif self.buffer[self.curpos] is "\"":
-			return self.read_string()
-		elif self.buffer[self.curpos] is "#":
-			return self.read_sharp()
-		elif self.buffer[self.curpos] is "'":
-			# this isn't needed, since we don't
-			# really need quoted things in this
-			# Scheme, but may as well have it,
-			# since I'm sure eventually I'll add
-			# some sort of macro...
-			return self.read_quote()
-		elif self.buffer[self.curpos].isdigit():
+        elif self.buffer[self.curpos] is "\"":
+            return self.read_string()
+        elif self.buffer[self.curpos] is "#":
+            return self.read_sharp()
+        elif self.buffer[self.curpos] is "'":
+            # this isn't needed, since we don't
+            # really need quoted things in this
+            # Scheme, but may as well have it,
+            # since I'm sure eventually I'll add
+            # some sort of macro...
+            return self.read_quote()
+        elif self.buffer[self.curpos].isdigit():
             # this should dispatch for all numeric
             # types in this unnamed Scheme...
             # - int: 99
@@ -2229,11 +2229,11 @@ class SExpressionReader(ExpressionReader):
             # - oct: 0o143
             # - bin: 0b1100011
             return self.read_numeric()
-		else:
-			return self.read_symbol()
+        else:
+            return self.read_symbol()
 
-	def read_expression(self):
-		pass
+    def read_expression(self):
+        pass
 
     def read_numeric(self):
         pass
@@ -2245,6 +2245,7 @@ class SExpressionReader(ExpressionReader):
         pass
 
     def read_symbol(self):
+        pass
 
     def next(self):
         pass
