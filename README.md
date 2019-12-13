@@ -49,7 +49,7 @@ Machine (basically, an AST walker; eventually I may add a SECD-style symbolic VM
 classes so far is the `ValueAST` class, which represents basic literals within a program:
 
 ```python
-from uspno9 import ValueAST
+from akvo import ValueAST
 g = ValueAST.new_integer(10)
 h = ValueAST.new_integer(11)
 j = ValueAST.new_symbolic_integer()
