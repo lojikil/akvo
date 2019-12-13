@@ -3,6 +3,9 @@
 A simple test case for an intermediate representation that can be used for symbolic execution & abstract interpretation. I'm focusing on a greybox-style of 
 symbex that concretizes via fuzzing.
 
+_NOTE BENE_ This is a fork of my previous project, [Unamed Symbolic Executor Number 9](https://github.com/lojikil/uspno.9). Some refactoring has been applied
+and it has been made to work with 3.x (I use 3.7 locally, but will update to 3.8 eventually)
+
 # Exploration
 
 This is meant to be a test bed for exploring ideas, rather than an industrial-quality grey-box path explorer. A few things I'd like to look into:
