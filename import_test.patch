@@ -1,0 +1,273 @@
+--- test.py
++++ test.py
+@@ -1,17 +1,17 @@
+ import akvo
+ 
+-print "Variable declaration tests\n====="
++print("Variable declaration tests\n=====")
+ 
+ f = akvo.VariableDecAST("f", akvo.ValueAST(int, 10), int)
+-print f.to_sexpr()
++print(f.to_sexpr())
+ g = akvo.VariableDecAST("g", akvo.ValueAST(int), int)
+ h = akvo.VariableDecAST("h", vtype=int)
+-print g.to_sexpr()
+-print h.to_sexpr()
++print(g.to_sexpr())
++print(h.to_sexpr())
+ j = akvo.VariableDecAST("j")
+-print j.to_sexpr()
+-
+-print "\nif-form test\n====="
++print(j.to_sexpr())
++
++print("\nif-form test\n=====")
+ 
+ cond0 = akvo.FunctionCallAST("<", [akvo.VarRefAST("f", int),
+                                      akvo.VarRefAST("g", int,
+@@ -21,9 +21,9 @@
+ else0 = akvo.FunctionCallAST("print", [akvo.ValueAST(str, "else")], str)
+ if0 = akvo.IfAST(cond0, then0, else0)
+ 
+-print if0.to_sexpr()
+-
+-print "\ninteger logic tests\n======"
++print(if0.to_sexpr())
++
++print("\ninteger logic tests\n======")
+ 
+ a = akvo.ValueAST.new_integer(9)
+ s = akvo.ValueAST.new_integer(10)
+@@ -38,10 +38,10 @@
+ res = [z,x,c,v,b,n]
+ 
+ for r in res:
+-    print r.value, r.trace, r.symbolic
+-
+-
+-print "\narithmatic tests\n====="
++    print(r.value, r.trace, r.symbolic)
++
++
++print("\narithmatic tests\n=====")
+ 
+ jj = akvo.ValueAST.new_symbolic_integer()
+ 
+@@ -50,21 +50,21 @@
+ cj = jj + a
+ ck = cj + ch
+ 
+-print cg.value, cg.trace
+-print ch.value, ch.trace
+-print cj.value, cj.trace
+-print ck.value, ck.trace
++print(cg.value, cg.trace)
++print(ch.value, ch.trace)
++print(cj.value, cj.trace)
++print(ck.value, ck.trace)
+ 
+ from akvo import *
+ 
+-print "\nexecution tests\n====="
++print("\nexecution tests\n=====")
+ 
+ if0 = IfAST(ValueAST.new_bool(True), ValueAST.new_integer(10), ValueAST.new_integer(11))
+ if1 = IfAST(VarRefAST("foo"), ValueAST.new_integer(12), ValueAST.new_integer(13))
+ 
+-print "execute the following test cases:"
+-print if0.to_sexpr()
+-print if1.to_sexpr()
++print("execute the following test cases:")
++print(if0.to_sexpr())
++print(if1.to_sexpr())
+ 
+ rootenv0 = EvalEnv({"foo": ValueAST.new_bool(True),
+                     "bar": ValueAST.new_integer(10)})
+@@ -81,47 +81,47 @@
+     vm0.microexecute(if1),
+     vm1.microexecute(if1)]
+ 
+-print "results: ", results
++print("results: ", results)
+ 
+ cond1 = akvo.FunctionCallAST("<", [akvo.ValueAST.new_integer(10),
+                                      akvo.ValueAST.new_integer(11)],
+                                      bool)
+-print type(cond1)
++print(type(cond1))
+ res, stack, env = vm0.microexecute(cond1)
+-print res.value
+-print res.trace
++print(res.value)
++print(res.trace)
+ 
+ cond2 = akvo.FunctionCallAST("<=", [akvo.ValueAST.new_integer(10),
+                                      akvo.ValueAST.new_integer(11)],
+                                      bool)
+-print type(cond2)
+-print cond2.to_sexpr()
++print(type(cond2))
++print(cond2.to_sexpr())
+ res, stack, env = vm0.microexecute(cond2)
+-print res.value
+-print res.trace
+-
+-print "Concrete:"
++print(res.value)
++print(res.trace)
++
++print("Concrete:")
+ 
+ cond3 = akvo.FunctionCallAST("<=", [akvo.VarRefAST("bar"),
+                                     akvo.ValueAST.new_integer(11)],
+                                     bool)
+-print type(cond3)
+-print cond3.to_sexpr()
++print(type(cond3))
++print(cond3.to_sexpr())
+ res = vm0.microexecute(cond3)
+-print res[0].value
+-print res[0].trace
+-
+-print "Symbolic:"
++print(res[0].value)
++print(res[0].trace)
++
++print("Symbolic:")
+ cond4 = akvo.FunctionCallAST("<=", [akvo.VarRefAST("baz"),
+                                     akvo.ValueAST.new_integer(11)],
+                                     bool)
+-print type(cond4)
+-print cond4.to_sexpr()
++print(type(cond4))
++print(cond4.to_sexpr())
+ res, stack, env = vm0.microexecute(cond4)
+-print res.lhs.to_sexpr()
+-print res.rhs.to_sexpr()
+-
+-print "\nwhile test\n====="
++print(res.lhs.to_sexpr())
++print(res.rhs.to_sexpr())
++
++print("\nwhile test\n=====")
+ 
+ body = [
+     FunctionCallAST("print", [VarRefAST("bar")]),
+@@ -130,12 +130,12 @@
+                                        ValueAST.new_integer(1)]))]
+ 
+ while0 = WhileAST(cond3, BeginAST(body))
+-print while0.to_sexpr()
++print(while0.to_sexpr())
+ 
+ res, stack, env = vm0.microexecute(while0)
+-print res
+-
+-print "\nfunction test\n====="
++print(res)
++
++print("\nfunction test\n=====")
+ # Let's build a new function...
+ 
+ cond5 = FunctionCallAST("<=", [VarRefAST("bar"), VarRefAST("len")], bool)
+@@ -147,64 +147,64 @@
+ # need a way to represent ::void as a type...
+ fn0 = FunctionAST("boo", [VarRefAST("len", int)], fnb0, VoidAST)
+ 
+-print "Boo should not be in the environment before hand:"
+-print env.get_or_none("boo")
++print("Boo should not be in the environment before hand:")
++print(env.get_or_none("boo"))
+ 
+ res, stack, env = vm0.microexecute(fn0)
+ 
+-print "Boo should be in the environment after execution:"
+-print env.get_or_none("boo")
+-
+-print "\nBefore execution, these should be simple:"
+-print res
+-print stack
+-print env
++print("Boo should be in the environment after execution:")
++print(env.get_or_none("boo"))
++
++print("\nBefore execution, these should be simple:")
++print(res)
++print(stack)
++print(env)
+ 
+ (res,) = env.get_or_none("boo")
+ 
+-print "\nFunction name: {0}, single parameter: {1}".format(res.name, res.params)
+-print "function body:", res.body.to_sexpr()
+-
+-print "\nLet's execute that function:"
++print("\nFunction name: {0}, single parameter: {1}".format(res.name, res.params))
++print("function body:", res.body.to_sexpr())
++
++print("\nLet's execute that function:")
+ fncall0 = FunctionCallAST("boo", [ValueAST.new_integer(1)], VoidAST)
+ 
+ res, stack, env = vm0.microexecute(fncall0)
+ 
+-print res
+-print stack
+-print env
++print(res)
++print(stack)
++print(env)
+ env.walk()
+ 
+-print "\nANF testing...\n====="
++print("\nANF testing...\n=====")
+ fc0 = FunctionCallAST("*", [ValueAST.new_integer(10), ValueAST.new_integer(20)])
+ fc1 = FunctionCallAST("/", [ValueAST.new_integer(12), ValueAST.new_integer(4)])
+ fc2 = FunctionCallAST("+", [fc0, fc1])
+ fc3 = FunctionCallAST("-", [fc2, ValueAST.new_integer(1)])
+ 
+-print "original form:"
+-
+-print fc2.to_sexpr()
+-
+-print "\nANF variant:"
++print("original form:")
++
++print(fc2.to_sexpr())
++
++print("\nANF variant:")
+ var, result = fc2.to_anf()
+ 
+ for v in var:
+-    print v.to_sexpr()
+-
+-print result.to_sexpr()
+-
+-print "\noriginal form:"
+-
+-print fc3.to_sexpr()
+-
+-print "\nANF variant:"
++    print(v.to_sexpr())
++
++print(result.to_sexpr())
++
++print("\noriginal form:")
++
++print(fc3.to_sexpr())
++
++print("\nANF variant:")
+ var, result = fc3.to_anf()
+ 
+ for v in var:
+-    print v.to_sexpr()
+-
+-print result.to_sexpr()
++    print(v.to_sexpr())
++
++print(result.to_sexpr())
+ 
+ cfg0 = ControlFlowGraph(None, rootenv0)
+-print cfg0.simple_cfg(fn0)
+-
++print(cfg0.simple_cfg(fn0))
++

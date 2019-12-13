@@ -1,0 +1,46 @@
+--- akvo/__init__.py    (original)
++++ akvo/__init__.py    (refactored)
+@@ -207,7 +207,7 @@
+         self.fn = fn
+
+     def apply(self, userdata):
+-        apply(self.fn, userdata)
++        self.fn(*userdata)
+
+
+ class VariableDecAST(AST):
+@@ -1723,8 +1723,8 @@
+         self.members[key] = value
+
+     def walk(self, cnt=0):
+-        print("environment frame {0}".format(cnt))
+-        print self.members
++        print(("environment frame {0}".format(cnt)))
++        print(self.members)
+
+         if self.parent is not None:
+             self.parent.walk(cnt + 1)
+@@ -2008,7 +2008,7 @@
+         params = cur_ast.params
+
+         if name in self.builtins:
+-            return apply(self.builtins[name], params)
++            return self.builtins[name](*params)
+
+
+ class ControlFlowGraph(object):
+@@ -2055,12 +2055,12 @@
+             pass
+         elif isinstance(fstnode, AST) and hasattr(fstnode, 'body'):
+             callstack.append(fstnode.body)
+-        print fstnode, type(fstnode)
++        print(fstnode, type(fstnode))
+
+         while len(callstack) > 0:
+             curitem = callstack.pop()
+
+-            print "reviewing:", curitem
++            print("reviewing:", curitem)
+
+             if type(curitem) is FunctionCallAST:
+                 # note this function call, unless
