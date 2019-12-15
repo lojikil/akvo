@@ -1,9 +1,14 @@
 import uuid
 import copy
 
-from .ast import *
+from .ast import (AST, VoidAST, FunctionAST, FunctionCallAST, NativeCallAST,
+                  VariableDecAST, ForkValueAST, ValueAST, IfAST, WhileAST,
+                  CondAST, BeginAST, ExplicitBeginAST, VarRefAST, ReturnAST,
+                  BreakContinueAST, SetValueAST, ForAST)
+
 from .eval import *
 from .cfg import *
+
 
 class Lexeme(object):
     # holds a Lexeme and has a bunch of

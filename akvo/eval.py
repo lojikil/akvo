@@ -1,4 +1,8 @@
-from .ast import *
+from .ast import (AST, VoidAST, FunctionAST, FunctionCallAST, NativeCallAST,
+                  VariableDecAST, ForkValueAST, ValueAST, IfAST, WhileAST,
+                  CondAST, BeginAST, ExplicitBeginAST, VarRefAST, ReturnAST,
+                  SetValueAST, BreakContinueAST, ForAST)
+import copy
 
 
 class PathExecution(object):
@@ -278,6 +282,8 @@ class Eval(object):
             # the frame of what needs to be popped
             # off or not...
             res = cur_ast
+        elif type(cur_ast) is NativeCallAST:
+            pass
         elif type(cur_ast) is IfAST:
             condition = cur_ast.condition
             thenbranch = cur_ast.thenbranch
@@ -413,5 +419,3 @@ class Eval(object):
 
         if name in self.builtins:
             return self.builtins[name](*params)
-
-

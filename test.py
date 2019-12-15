@@ -205,6 +205,7 @@ for v in var:
 
 print(result.to_sexpr())
 
+print("\nControl Flow Graph recovery...\n=====")
 cfg0 = ControlFlowGraph(None, rootenv0)
 print(cfg0.simple_cfg(fn0))
 

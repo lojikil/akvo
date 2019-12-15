@@ -1,4 +1,8 @@
-from .ast import *
+from .ast import (AST, VoidAST, FunctionAST, FunctionCallAST, NativeCallAST,
+                  VariableDecAST, ForkValueAST, ValueAST, IfAST, WhileAST,
+                  CondAST, BeginAST, ExplicitBeginAST, VarRefAST, ReturnAST,
+                  BreakContinueAST, SetValueAST, ForAST)
+
 
 class ControlFlowGraph(object):
     def __init__(self, asts, env):
