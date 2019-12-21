@@ -125,11 +125,18 @@ class Lexeme(object):
         pass
 
     @staticmethod
+    def new_error(message):
+        return Lexeme(lv, 16)
+
+    def is_error(self):
+        return self.lexeme_type == 16
+
+    @staticmethod
     def expect(buf, curpos, expected):
         res = Lexeme.next(buf, curpos)
 
         if res.lexeme_type != expected:
-            return LexError("mismatch...")
+            return Lexeme.new_error("unexpected lexeme type found!")
         return res
 
 
