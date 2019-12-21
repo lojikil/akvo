@@ -1,4 +1,3 @@
-
 class Lexeme(object):
     # holds a Lexeme and has a bunch of
     # helper methods. I'm attempting to
@@ -78,6 +77,60 @@ class Lexeme(object):
 
     def is_sym(self):
         return self.lexeme_type == 9
+
+    @staticmethod
+    def new_opar(lv):
+        return Lexeme(lv, 10)
+
+    def is_opar(self):
+        return self.lexeme_type == 10
+
+    @staticmethod
+    def new_cpar(lv):
+        return Lexeme(lv, 11)
+
+    def is_cpar(self):
+        return self.lexeme_type == 11
+
+    @staticmethod
+    def new_obracket(lv):
+        return Lexeme(lv, 12)
+
+    def is_obracket(self):
+        return self.lexeme_type == 12
+
+    @staticmethod
+    def new_cbracket(lv):
+        return Lexeme(lv, 13)
+
+    def is_cbracket(self):
+        return self.lexeme_type == 13
+
+    @staticmethod
+    def new_osquig(lv):
+        return Lexeme(lv, 14)
+
+    def is_osquig(self):
+        return self.lexeme_type == 14
+
+    @staticmethod
+    def new_csquig(lv):
+        return Lexeme(lv, 15)
+
+    def is_csquig(self):
+        return self.lexeme_type == 15
+
+    @staticmethod
+    def next(buf, curpos):
+        pass
+
+    @staticmethod
+    def expect(buf, curpos, expected):
+        res = Lexeme.next(buf, curpos)
+
+        if res.lexeme_type != expected:
+            return LexError("mismatch...")
+        return res
 
 
 class ExpressionReader(object):
