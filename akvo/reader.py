@@ -4,6 +4,8 @@ class Lexeme(object):
     # avoid a huge hierarchy of Lexeme
     # classes here...
 
+    breakchars = [';', '{', '}', '[', ']', '(', ')']
+
     def __init__(self, lexeme_value, lexeme_type):
         self.lexeme_value = lexeme_value
         self.lexeme_type = lexeme_type
@@ -121,7 +123,7 @@ class Lexeme(object):
         return self.lexeme_type == 15
 
     @staticmethod
-    def next(buf, curpos):
+    def next(buf, curpos, skipcomments=True):
         # so, obviously we want this to be able
         # to process comments and such, *but*,
         # we also want it to record newlines and
@@ -135,18 +137,26 @@ class Lexeme(object):
         # as the *transcoded* line number, so that
         # we can do source mapping back to the
         # original code base.
+        #
+        # actually, thinking about this further,
+        # we need to return the offset as well
+        #
+        # skipcomments: if True, we do not return
+        # a lexeme for comments, but instead just
+        # consume it until the next token; useful
+        # for CST construction
         if buf[curpos] == '(':
-            pass
+            return Lexeme.new_opar('(')
         elif buf[curpos] == ')':
-            pass
+            return Lexeme.new_cpar(')')
         elif buf[cupos] == '[':
-            pass
+            return Lexeme.new_obracket('[')
         elif buf[curpos] == ']':
-            pass
+            return Lexeme.new_cbracket(']')
         elif buf[curpos] == '{':
-            pass
+            return Lexeme.new_osquig('{')
         elif buf[curpos] == '}':
-            pass
+            return Lexeme.new_csquig('}')
         elif buf[curpos].isdigit():
             pass
         elif buf[curpos] == '"':
