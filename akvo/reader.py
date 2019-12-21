@@ -122,6 +122,19 @@ class Lexeme(object):
 
     @staticmethod
     def next(buf, curpos):
+        # so, obviously we want this to be able
+        # to process comments and such, *but*,
+        # we also want it to record newlines and
+        # such, so that we know where in the code
+        # a specific read error or expression comes
+        # from. This could also be useful within
+        # the AST system, as it can then record
+        # where a specific value comes from in the
+        # source. Even further, we may want to
+        # record the *original* line number as well
+        # as the *transcoded* line number, so that
+        # we can do source mapping back to the
+        # original code base.
         if buf[curpos] == '(':
             pass
         elif buf[curpos] == ')':
