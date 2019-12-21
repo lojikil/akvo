@@ -122,7 +122,28 @@ class Lexeme(object):
 
     @staticmethod
     def next(buf, curpos):
-        pass
+        if buf[curpos] == '(':
+            pass
+        elif buf[curpos] == ')':
+            pass
+        elif buf[cupos] == '[':
+            pass
+        elif buf[curpos] == ']':
+            pass
+        elif buf[curpos] == '{':
+            pass
+        elif buf[curpos] == '}':
+            pass
+        elif buf[curpos].isdigit():
+            pass
+        elif buf[curpos] == '"':
+            pass
+        elif buf[curpos] == "'":
+            pass
+        elif buf[curpos].isalpha():
+            pass
+        elif buf[curpos] == ';':
+            pass
 
     @staticmethod
     def new_error(message):
