@@ -215,14 +215,14 @@ from akvo.reader import Lexeme
 lsrc = """(symbol "string")"""
 pos = 0
 
+print("src string:", lsrc)
 while True:
     res = Lexeme.next(lsrc, pos)
     if res.is_end_of_line():
         break
-    print("lexeme: {0}, type: {1}".format(res.lexeme_value, res.lexeme_type))
+    print("lexeme: {0}, type: {1}, offset: {2}, length: {3}".format(res.lexeme_value, res.lexeme_type, res.offset, res.length))
 
-    pos += res.offset
+    pos = res.offset + res.length
 
-    # HACK: remove when I fix offsets in Lexeme...
     if res.is_string():
-        pos += 3
+        pos += 1

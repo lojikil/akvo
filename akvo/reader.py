@@ -7,137 +7,138 @@ class Lexeme(object):
     breakchars = [';', '{', '}', '[', ']', '(', ')', '"']
     whitespace = [" ", "\t", "\n", "\r"]
 
-    def __init__(self, lexeme_value, lexeme_type):
+    def __init__(self, lexeme_value, lexeme_type, offset):
         self.lexeme_value = lexeme_value
         self.lexeme_type = lexeme_type
-        self.offset = 0
+        self.offset = offset
+        self.length = 0
 
         if lexeme_value is not None:
-            self.offset = len(lexeme_value)
+            self.length = len(lexeme_value)
 
     @staticmethod
-    def new_key(lv):
-        return Lexeme(lv, 0)
+    def new_key(lv, offset):
+        return Lexeme(lv, 0, offset)
 
     def is_key(self):
         return self.lexeme_type == 0
 
     @staticmethod
-    def new_keyword(lv):
-        return Lexeme(lv, 1)
+    def new_keyword(lv, offset):
+        return Lexeme(lv, 1, offset)
 
     def is_keyword(self):
         return self.lexeme_type == 1
 
     @staticmethod
-    def new_string(lv):
-        return Lexeme(lv, 2)
+    def new_string(lv, offset):
+        return Lexeme(lv, 2, offset)
 
     def is_string(self):
         return self.lexeme_type == 2
 
     @staticmethod
-    def new_int(lv):
-        return Lexeme(lv, 3)
+    def new_int(lv, offset):
+        return Lexeme(lv, 3, offset)
 
     def is_int(self):
         return self.lexeme_type == 3
 
     @staticmethod
-    def new_hex(lv):
-        return Lexeme(lv, 4)
+    def new_hex(lv, offset):
+        return Lexeme(lv, 4, offset)
 
     def is_hex(self):
         return self.lexeme_type == 4
 
     @staticmethod
-    def new_oct(lv):
-        return Lexeme(lv, 5)
+    def new_oct(lv, offset):
+        return Lexeme(lv, 5, offset)
 
     def is_oct(self):
         return self.lexeme_type == 5
 
     @staticmethod
-    def new_bin(lv):
-        return Lexeme(lv, 6)
+    def new_bin(lv, offset):
+        return Lexeme(lv, 6, offset)
 
     def is_bin(self):
         return self.lexeme_type == 6
 
     @staticmethod
-    def new_float(lv):
-        return Lexeme(lv, 7)
+    def new_float(lv, offset):
+        return Lexeme(lv, 7, offset)
 
     def is_float(self):
         return self.lexeme_type == 7
 
     @staticmethod
-    def new_char(lv):
-        return Lexeme(lv, 8)
+    def new_char(lv, offset):
+        return Lexeme(lv, 8, offset)
 
     def is_char(self):
         return self.lexeme_type == 8
 
     @staticmethod
-    def new_sym(lv):
-        return Lexeme(lv, 9)
+    def new_sym(lv, offset):
+        return Lexeme(lv, 9, offset)
 
     def is_sym(self):
         return self.lexeme_type == 9
 
     @staticmethod
-    def new_opar(lv):
-        return Lexeme(lv, 10)
+    def new_opar(lv, offset):
+        return Lexeme(lv, 10, offset)
 
     def is_opar(self):
         return self.lexeme_type == 10
 
     @staticmethod
-    def new_cpar(lv):
-        return Lexeme(lv, 11)
+    def new_cpar(lv, offset):
+        return Lexeme(lv, 11, offset)
 
     def is_cpar(self):
         return self.lexeme_type == 11
 
     @staticmethod
-    def new_obracket(lv):
-        return Lexeme(lv, 12)
+    def new_obracket(lv, offset):
+        return Lexeme(lv, 12, offset)
 
     def is_obracket(self):
         return self.lexeme_type == 12
 
     @staticmethod
-    def new_cbracket(lv):
-        return Lexeme(lv, 13)
+    def new_cbracket(lv, offset):
+        return Lexeme(lv, 13, offset)
 
     def is_cbracket(self):
         return self.lexeme_type == 13
 
     @staticmethod
-    def new_osquig(lv):
-        return Lexeme(lv, 14)
+    def new_osquig(lv, offset):
+        return Lexeme(lv, 14, offset)
 
     def is_osquig(self):
         return self.lexeme_type == 14
 
     @staticmethod
-    def new_csquig(lv):
-        return Lexeme(lv, 15)
+    def new_csquig(lv, offset):
+        return Lexeme(lv, 15, offset)
 
     def is_csquig(self):
         return self.lexeme_type == 15
 
     @staticmethod
-    def new_error(msg):
-        return Lexeme(msg, 16)
+    def new_error(msg, offset):
+        return Lexeme(msg, 16, offset)
 
     def is_error(self):
         return self.lexeme_type == 16
 
     # END OF LINE #
     @staticmethod
-    def new_end_of_line():
-        return Lexeme(None, 17)
+    def new_end_of_line(offset):
+        return Lexeme(None, 17, offset)
 
     def is_end_of_line(self):
         return self.lexeme_type == 17
@@ -179,21 +180,23 @@ class Lexeme(object):
                buf[curpos] in Lexeme.whitespace):
             curpos += 1
 
+        start = curpos
+
         if curpos >= len(buf):
-            return Lexeme.new_end_of_line()
+            return Lexeme.new_end_of_line(start)
 
         if buf[curpos] == '(':
-            return Lexeme.new_opar('(')
+            return Lexeme.new_opar('(', start)
         elif buf[curpos] == ')':
-            return Lexeme.new_cpar(')')
+            return Lexeme.new_cpar(')', start)
         elif buf[curpos] == '[':
-            return Lexeme.new_obracket('[')
+            return Lexeme.new_obracket('[', start)
         elif buf[curpos] == ']':
-            return Lexeme.new_cbracket(']')
+            return Lexeme.new_cbracket(']', start)
         elif buf[curpos] == '{':
-            return Lexeme.new_osquig('{')
+            return Lexeme.new_osquig('{', start)
         elif buf[curpos] == '}':
-            return Lexeme.new_csquig('}')
+            return Lexeme.new_csquig('}', start)
         elif buf[curpos].isdigit():
             pass
         elif buf[curpos] == '"':
@@ -204,7 +207,7 @@ class Lexeme(object):
                     curpos += 1
                 curpos += 1
             res = buf[start:curpos]
-            return Lexeme.new_string(res)
+            return Lexeme.new_string(res, start)
         elif buf[curpos] == "'":
             pass
         elif buf[curpos].isalpha():
@@ -213,7 +216,7 @@ class Lexeme(object):
                    buf[curpos] not in Lexeme.breakchars):
                 curpos += 1
             res = buf[start:curpos]
-            return Lexeme.new_sym(res)
+            return Lexeme.new_sym(res, start)
         elif buf[curpos] == ';':
             pass
 
