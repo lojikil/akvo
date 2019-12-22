@@ -4,11 +4,16 @@ class Lexeme(object):
     # avoid a huge hierarchy of Lexeme
     # classes here...
 
-    breakchars = [';', '{', '}', '[', ']', '(', ')']
+    breakchars = [';', '{', '}', '[', ']', '(', ')', '"']
+    whitespace = [" ", "\t", "\n", "\r"]
 
     def __init__(self, lexeme_value, lexeme_type):
         self.lexeme_value = lexeme_value
         self.lexeme_type = lexeme_type
+        self.offset = 0
+
+        if lexeme_value is not None:
+            self.offset = len(lexeme_value)
 
     @staticmethod
     def new_key(lv):
@@ -123,6 +128,21 @@ class Lexeme(object):
         return self.lexeme_type == 15
 
     @staticmethod
+    def new_error(msg):
+        return Lexeme(msg, 16)
+
+    def is_error(self):
+        return self.lexeme_type == 16
+
+    # END OF LINE #
+    @staticmethod
+    def new_end_of_line():
+        return Lexeme(None, 17)
+
+    def is_end_of_line(self):
+        return self.lexeme_type == 17
+
+    @staticmethod
     def next(buf, curpos, skipcomments=True):
         # so, obviously we want this to be able
         # to process comments and such, *but*,
@@ -145,11 +165,28 @@ class Lexeme(object):
         # a lexeme for comments, but instead just
         # consume it until the next token; useful
         # for CST construction
+        #
+        # probably actually need the same thing
+        # for white space, if we really want to
+        # be able to construct a CST from these
+        # lexes...
+
+        # because we eat white space by default,
+        # we actually need to track the offset
+        # for the user, so they know where the
+        # current end position in the buffer is
+        while (curpos < len(buf) and
+               buf[curpos] in Lexeme.whitespace):
+            curpos += 1
+
+        if curpos >= len(buf):
+            return Lexeme.new_end_of_line()
+
         if buf[curpos] == '(':
             return Lexeme.new_opar('(')
         elif buf[curpos] == ')':
             return Lexeme.new_cpar(')')
-        elif buf[cupos] == '[':
+        elif buf[curpos] == '[':
             return Lexeme.new_obracket('[')
         elif buf[curpos] == ']':
             return Lexeme.new_cbracket(']')
@@ -160,11 +197,23 @@ class Lexeme(object):
         elif buf[curpos].isdigit():
             pass
         elif buf[curpos] == '"':
-            pass
+            curpos += 1
+            start = curpos
+            while buf[curpos] != '"':
+                if buf[curpos] == '\\':
+                    curpos += 1
+                curpos += 1
+            res = buf[start:curpos]
+            return Lexeme.new_string(res)
         elif buf[curpos] == "'":
             pass
         elif buf[curpos].isalpha():
-            pass
+            start = curpos
+            while (buf[curpos] not in Lexeme.whitespace and
+                   buf[curpos] not in Lexeme.breakchars):
+                curpos += 1
+            res = buf[start:curpos]
+            return Lexeme.new_sym(res)
         elif buf[curpos] == ';':
             pass
 

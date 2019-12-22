@@ -209,3 +209,20 @@ print("\nControl Flow Graph recovery...\n=====")
 cfg0 = ControlFlowGraph(None, rootenv0)
 print(cfg0.simple_cfg(fn0))
 
+print("\nLexeme testing\n=====")
+from akvo.reader import Lexeme
+
+lsrc = """(symbol "string")"""
+pos = 0
+
+while True:
+    res = Lexeme.next(lsrc, pos)
+    if res.is_end_of_line():
+        break
+    print("lexeme: {0}, type: {1}".format(res.lexeme_value, res.lexeme_type))
+
+    pos += res.offset
+
+    # HACK: remove when I fix offsets in Lexeme...
+    if res.is_string():
+        pos += 3
