@@ -209,7 +209,34 @@ class Lexeme(object):
             res = buf[start:curpos]
             return Lexeme.new_string(res, start + 1)
         elif buf[curpos] == "'":
-            pass
+            curpos += 1
+            start = curpos
+            if buf[curpos] == '\\':
+                curpos += 1
+                # probably should just make this a
+                # lookup table...
+                if buf[curpos] == 'n':
+                    res = "\n"
+                elif buf[curpos] == 'v':
+                    res = '\v'
+                elif buf[curpos] == 'r':
+                    res = '\r'
+                elif buf[curpos] == 'b':
+                    res = '\b'
+                elif buf[curpos] == 'l':
+                    res = '\l'
+                elif buf[curpos] == 't':
+                    res = '\t'
+                else:
+                    res = buf[curpos]
+            else:
+                res = buf[curpos]
+            curpos += 1
+
+            if buf[curpos] != "'":
+                return Lexeme.new_error("malformed character")
+            else:
+                return Lexeme.new_char(res, start)
         elif buf[curpos].isalpha():
             start = curpos
             while (buf[curpos] not in Lexeme.whitespace and
