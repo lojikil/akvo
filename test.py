@@ -224,5 +224,17 @@ while True:
 
     pos = res.offset + res.length
 
-    if res.is_string():
-        pos += 1
+    # if res.is_string():
+        # pos += 1
+
+lsrc = """(    symbol\n\n\n"string     \\\"   test")"""
+pos = 0
+
+print("src string:", lsrc)
+while True:
+    res = Lexeme.next(lsrc, pos)
+    if res.is_end_of_line():
+        break
+    print("lexeme: {0}, type: {1}, offset: {2}, length: {3}".format(res.lexeme_value, res.lexeme_type, res.offset, res.length))
+
+    pos = res.offset + res.length

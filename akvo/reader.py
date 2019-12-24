@@ -207,7 +207,7 @@ class Lexeme(object):
                     curpos += 1
                 curpos += 1
             res = buf[start:curpos]
-            return Lexeme.new_string(res, start)
+            return Lexeme.new_string(res, start + 1)
         elif buf[curpos] == "'":
             pass
         elif buf[curpos].isalpha():
