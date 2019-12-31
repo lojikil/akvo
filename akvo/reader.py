@@ -198,7 +198,66 @@ class Lexeme(object):
         elif buf[curpos] == '}':
             return Lexeme.new_csquig('}', start)
         elif buf[curpos].isdigit():
-            pass
+            dtype = 0
+            while (curpos < len(buf) and
+                   buf[curpos] not in Lexeme.whitespace and
+                   buf[curpos] not in Lexeme.breakchars):
+                if dtype == 0:
+                    # I do really need to check
+                    # positionally where these
+                    # are, like 0b01001 is ok,
+                    # but 0001b1010 is wrong...
+                    if buf[curpos] == '.':
+                        # float
+                        dtype = 1
+                    elif buf[curpos] == 'b':
+                        # binary
+                        dtype = 2
+                    elif buf[curpos] == 'x':
+                        # hex
+                        dtype = 3
+                    elif buf[curpos] == 'o':
+                        # oct
+                        dtype = 4
+                    elif buf[curpos].isdigit():
+                        pass
+                    else:
+                        # we need to handle symbols here,
+                        # because I didn't make this whole
+                        # thing a giant state machine.
+                        pass
+                    curpos += 1
+                elif dtype == 1:
+                    if buf[curpos].isdigit():
+                        curpos += 1
+                    elif buf[curpos].isalpha():
+                        # need to check for a wider range
+                        # of things here, like ! and $ and
+                        # so on.
+                        curpos += 1
+                        dtype = 5
+                elif dtype == 2:
+                    pass
+                elif dtype == 3:
+                    pass
+                elif dtype == 4:
+                    pass
+
+            res = buf[start:curpos]
+
+            if dtype == 0:
+                return Lexeme.new_int(res, start)
+            elif dtype == 1:
+                return Lexeme.new_float(res, start)
+            elif dtype == 2:
+                return Lexeme.new_bin(res, start)
+            elif dtype == 3:
+                return Lexeme.new_hex(res, start)
+            elif dtype == 4:
+                return Lexeme.new_oct(res, start)
+            elif dtype == 5:
+                return Lexeme.new_sym(res, start)
+
         elif buf[curpos] == '"':
             curpos += 1
             start = curpos
