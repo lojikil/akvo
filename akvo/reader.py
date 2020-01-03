@@ -237,11 +237,23 @@ class Lexeme(object):
                         curpos += 1
                         dtype = 5
                 elif dtype == 2:
-                    pass
+                    if buf[curpos] in ["0", "1"]:
+                        curpos += 1
+                    elif buf[curpos].isalpha():
+                        curpos += 1
+                        dtype = 5
                 elif dtype == 3:
-                    pass
+                    if buf[curpos] in "0123456789ABCDEFabcdef":
+                        curpos += 1
+                    else:
+                        curpos += 1
+                        dtype = 5
                 elif dtype == 4:
-                    pass
+                    if buf[curpos] in "01234567":
+                        curpos += 1
+                    else:
+                        curpos += 1
+                        dtype = 5
 
             res = buf[start:curpos]
 
