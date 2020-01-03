@@ -225,7 +225,7 @@ class Lexeme(object):
                         # we need to handle symbols here,
                         # because I didn't make this whole
                         # thing a giant state machine.
-                        pass
+                        dtype = 5
                     curpos += 1
                 elif dtype == 1:
                     if buf[curpos].isdigit():
@@ -254,6 +254,8 @@ class Lexeme(object):
                     else:
                         curpos += 1
                         dtype = 5
+                elif dtype == 5:
+                    curpos += 1
 
             res = buf[start:curpos]
 
