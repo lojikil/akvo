@@ -117,4 +117,26 @@ print("results: ", results)
 ```
 
 These will result in a series of `PathExecution` instances that detail the conditions underwhich the `if`
-forms executed
+forms executed:
+
+```
+execute the following test cases:
+(if (value True ::bool trace: True tag: 84aa56ef-5982-419a-b3d5-35a385c3c3cd) (value 10 ::int trace: 10 tag: a6cc2f6a-8c40-4fa6-a181-b490d2670802) (value 11 ::int trace: 11 tag: 2799c5f8-ed85-4946-bd21-3332f1333f2b))
+(if (variable foo ::pure-symbolic) (value 12 ::int trace: 12 tag: 299ed052-c239-4ffd-87cc-9b4de5dffe1b) (value 13 ::int trace: 13 tag: 6e563b33-7d1f-4df5-b080-67a17c83b71c))
+
+Result: (PathExecution((value 10 ::int trace: 10 tag: a6cc2f6a-8c40-4fa6-a181-b490d2670802), <akvo.ast.ValueAST object at 0x10153c630>), [], <akvo.eval.EvalEnv object at 0x101627128>)
+Result: (PathExecution((value 10 ::int trace: 10 tag: a6cc2f6a-8c40-4fa6-a181-b490d2670802), <akvo.ast.ValueAST object at 0x10153c630>), [], <akvo.eval.EvalEnv object at 0x1016271d0>)
+Result: (PathExecution((value 12 ::int trace: 12 tag: 299ed052-c239-4ffd-87cc-9b4de5dffe1b), <akvo.ast.VarRefAST object at 0x10160bbe0>), [], <akvo.eval.EvalEnv object at 0x101627128>)
+Result: (<akvo.eval.ForkPathExecution object at 0x101627358>, [], <akvo.eval.EvalEnv object at 0x1016271d0>)
+```
+
+Note that each execution results in a `PathExecution` instance, save for the last case; here, we do not have a known value for `foo`,
+and akvo informs us that there are two paths, denoted by a `ForkPathExecution` instance:
+
+```python
+result = results[-1]
+print([x.to_sexpr() for x in result[0].asts])
+# Displays something like: ['(value 12 ::int trace: 12 tag: c2cb1f9d-9b03-4d56-947b-660cf63880ad)', '(value 13 ::int trace: 13 tag: 84d405ec-58f8-4241-9816-f53ca1c9e62a)']
+print(result[0].constraints)
+# Displays: [False, True]
+```
