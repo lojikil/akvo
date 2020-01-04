@@ -71,3 +71,50 @@ Values in this Bigloo-like Scheme have several annotations:
 The last item is to ensure that if we see the literal `10` within a program 3 time, each location is uniquely tagged, such that we may always trace back
 to the specific location that this "magic value" was introduced. Both the Scheme system and the Python API accept tags as part of values, such that if 
 you reify Python Classes to Scheme, they may be reinflated with the same tags and the like.
+
+## Execution
+
+The _more_ interesting part of having a language, even if it is just an AST walker, is execution. To this end, akvo also supports
+a style of "microexecution" of Scheme/IR forms:
+
+```python
+from akvo.ast import IfAST, ValueAST, VarRefAST
+from akvo.eval import EvalEnv, Eval
+
+# The Scheme Code for these:
+#
+# (if true 10 11)
+# (if foo 12 13)
+#
+
+if0 = IfAST(ValueAST.new_bool(True),
+            ValueAST.new_integer(10),
+            ValueAST.new_integer(11))
+if1 = IfAST(VarRefAST("foo"),
+            ValueAST.new_integer(12),
+            ValueAST.new_integer(13))
+
+print("execute the following test cases:")
+print(if0.to_sexpr())
+print(if1.to_sexpr())
+
+rootenv0 = EvalEnv({"foo": ValueAST.new_bool(True),
+                    "bar": ValueAST.new_integer(10)})
+rootenv1 = EvalEnv({"foo": ValueAST.new_symbolic_bool()})
+
+# we don't affix the asts for now, because we're just
+# going to microexecute them
+vm0 = Eval(None, rootenv0)
+vm1 = Eval(None, rootenv1)
+
+results = [
+    vm0.microexecute(if0),
+    vm1.microexecute(if0),
+    vm0.microexecute(if1),
+    vm1.microexecute(if1)]
+
+print("results: ", results)
+```
+
+These will result in a series of `PathExecution` instances that detail the conditions underwhich the `if`
+forms executed
