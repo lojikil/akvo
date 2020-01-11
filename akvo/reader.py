@@ -310,9 +310,10 @@ class Lexeme(object):
                 return Lexeme.new_error("malformed character")
             else:
                 return Lexeme.new_char(res, start)
-        elif buf[curpos].isalpha():
+        elif buf[curpos].isalpha() or buf[curpos].isprintable():
             start = curpos
-            while (buf[curpos] not in Lexeme.whitespace and
+            while (curpos < len(buf) and
+                   buf[curpos] not in Lexeme.whitespace and
                    buf[curpos] not in Lexeme.breakchars):
                 curpos += 1
             res = buf[start:curpos]
