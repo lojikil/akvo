@@ -14,7 +14,7 @@ class PathExecution(object):
         tmpl = "PathExecution({0}, {1})"
 
         res = tmpl.format(self.asts.to_sexpr(),
-                          str(self.constraint))
+                          self.constraint.to_sexpr())
         return res
 
     def __repr__(self):
