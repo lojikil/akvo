@@ -336,6 +336,26 @@ class Lexeme(object):
             return Lexeme.new_error("unexpected lexeme type found!")
         return res
 
+    @staticmethod
+    def iter_next(buf):
+        offset = 0
+        while True:
+            res = Lexeme.next(buf, offset)
+            if res.is_end_of_line():
+                raise StopIteration()
+
+            offset = res.offset + res.length
+            yield res
+
+    @staticmethod
+    def all(buf):
+        ret = []
+        try:
+            for lex in Lexeme.iter_next(buf):
+                ret.append(lex)
+        finally:
+            return ret
+
 
 class ExpressionReader(object):
     def __init__(self, src):
