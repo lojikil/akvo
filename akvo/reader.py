@@ -143,6 +143,10 @@ class Lexeme(object):
     def is_end_of_line(self):
         return self.lexeme_type == 17
 
+    def __str__(self):
+        return "Lexeme('{0}', {1})".format(self.lexeme_value,
+                                           self.lexeme_type)
+
     @staticmethod
     def next(buf, curpos, skipcomments=True):
         # so, obviously we want this to be able
@@ -340,7 +344,11 @@ class Lexeme(object):
     def iter_next(buf):
         offset = 0
         while True:
+            if offset > len(buf):
+                raise StopIteration()
+
             res = Lexeme.next(buf, offset)
+
             if res.is_end_of_line():
                 raise StopIteration()
 
@@ -378,47 +386,10 @@ class ExpressionReader(object):
 
 class SExpressionReader(ExpressionReader):
     def read(self):
-
-        # eat whitespace; we could just trim(),
-        # but that would miss interstitial
-        # whitespace, and would be a bit ineffiecient
-        while self.iswhite(self.buffer[self.curpos]):
-            self.curpos += 1
-
-        if self.buffer[self.curpos] is "(":
-            return self.read_expression()
-        elif self.buffer[self.curpos] is "[":
-            return self.read_array()
-        # need end detection like #\] and such
-        # should return a Lexeme there...
-        elif self.buffer[self.curpos] is "\"":
-            return self.read_string()
-        elif self.buffer[self.curpos] is "#":
-            return self.read_sharp()
-        elif self.buffer[self.curpos] is "'":
-            # this isn't needed, since we don't
-            # really need quoted things in this
-            # Scheme, but may as well have it,
-            # since I'm sure eventually I'll add
-            # some sort of macro...
-            return self.read_quote()
-        elif self.buffer[self.curpos].isdigit():
-            # this should dispatch for all numeric
-            # types in this unnamed Scheme...
-            # - int: 99
-            # - float: 9.9
-            # - complex: +9i-9
-            # - hex: 0x63
-            # - oct: 0o143
-            # - bin: 0b1100011
-            return self.read_numeric()
-        else:
-            return self.read_symbol()
+        pass
 
     def read_expression(self):
-        prep = []
-        self.curpos += 1
-        head = self.read_symbol()
+        pass
 
     def read_numeric(self):
         pass
@@ -427,19 +398,7 @@ class SExpressionReader(ExpressionReader):
         pass
 
     def read_string(self):
-
-        start = self.curpos
-        self.curpos += 1
-
-        while self.buffer[self.curpos] != '"':
-            if self.buffer[self.curpos] == '\\':
-                self.curpos += 1
-            self.curpos += 1
-
-            if self.curpos > len(self.buffer):
-                return LexError("missing end of string before end of buffer")
-
-        return self.buffer[start:self.curpos]
+        pass
 
     def read_symbol(self):
         pass
