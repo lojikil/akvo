@@ -1,3 +1,6 @@
+from .ast import ValueAST
+
+
 class Lexeme(object):
     # holds a Lexeme and has a bunch of
     # helper methods. I'm attempting to
@@ -377,75 +380,30 @@ class ExpressionReader(object):
 
 
 class SExpressionReader(ExpressionReader):
-    def read(self):
+    def read(self, pos=0):
+        res = Lexeme.next(self.src, pos)
 
-        # eat whitespace; we could just trim(),
-        # but that would miss interstitial
-        # whitespace, and would be a bit ineffiecient
-        while self.iswhite(self.buffer[self.curpos]):
-            self.curpos += 1
-
-        if self.buffer[self.curpos] is "(":
-            return self.read_expression()
-        elif self.buffer[self.curpos] is "[":
-            return self.read_array()
-        # need end detection like #\] and such
-        # should return a Lexeme there...
-        elif self.buffer[self.curpos] is "\"":
-            return self.read_string()
-        elif self.buffer[self.curpos] is "#":
-            return self.read_sharp()
-        elif self.buffer[self.curpos] is "'":
-            # this isn't needed, since we don't
-            # really need quoted things in this
-            # Scheme, but may as well have it,
-            # since I'm sure eventually I'll add
-            # some sort of macro...
-            return self.read_quote()
-        elif self.buffer[self.curpos].isdigit():
-            # this should dispatch for all numeric
-            # types in this unnamed Scheme...
-            # - int: 99
-            # - float: 9.9
-            # - complex: +9i-9
-            # - hex: 0x63
-            # - oct: 0o143
-            # - bin: 0b1100011
-            return self.read_numeric()
-        else:
-            return self.read_symbol()
-
-    def read_expression(self):
-        prep = []
-        self.curpos += 1
-        head = self.read_symbol()
-
-    def read_numeric(self):
-        pass
-
-    def read_array(self):
-        pass
-
-    def read_string(self):
-
-        start = self.curpos
-        self.curpos += 1
-
-        while self.buffer[self.curpos] != '"':
-            if self.buffer[self.curpos] == '\\':
-                self.curpos += 1
-            self.curpos += 1
-
-            if self.curpos > len(self.buffer):
-                return LexError("missing end of string before end of buffer")
-
-        return self.buffer[start:self.curpos]
-
-    def read_symbol(self):
-        pass
-
-    def next(self):
-        pass
+        if res.is_string():
+            return ValueAST.new_string(res.lexeme_value)
+        elif res.is_int():
+            # I think the helper methods here need to actually
+            # deal with values, not the reader per se. The thought
+            # here is what do we do when we have integers that are
+            # too large for a python int (or w/e)? We don't want
+            # the _reader_ to know how to do that work, that is an
+            # abstraction leak. Instead, the helper method should
+            # handle such situations
+            return ValueAST.new_integer(int(res.lexeme_value))
+        elif res.is_hex():
+            pass
+        elif res.is_oct():
+            pass
+        elif res.is_float():
+            pass
+        elif res.is_char():
+            pass
+        elif res.is_sym():
+            pass
 
 
 class DExpressionReader(ExpressionReader):
