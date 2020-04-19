@@ -140,3 +140,45 @@ print([x.to_sexpr() for x in result[0].asts])
 print(result[0].constraints)
 # Displays: [False, True]
 ```
+
+## Scheme
+
+There is also a reader for Scheme-based forms of Code Property Graphs (CPGs) in `akvo.reader.SExpressionReader`; this can be used to
+read short or canonical Scheme programs that have been saved by other passes, or expressions written by users in order to configure
+an analysis or even simply general programming. This is based off the `akvo.reader.Lexeme` class.
+
+```python
+import akvo.reader
+src = """(if (call < 10 11) "yes" "no")"""
+
+lexes = Lexeme.all(src)
+for lex in lexes:
+    print(f"type: {lex.lexeme_type}, value: {lex.lexeme_value}")
+
+# just an example, I'm still working on the parsing
+# of expressions
+reader = akvo.reader.SExpressionReader(src)
+ifast = reader.read()
+print(ifast.to_sexpr())
+```
+
+### Cannonical vs Short forms
+
+You'll note that I often give examples in short form, but akvo itself always prints long, or cannonical, form. This is so that humans
+can write code to the level of precision they require, and akvo always operates on the same level. Some examples follow.
+
+```scheme
+; short form
+10
+
+; cannonical form
+(value 10 tag: ... trace: 10)
+
+; short form
+(call * 10 20)
+
+; cannonical form
+(call * ::pure-symbolic
+    (value 10 ::int trace: 10 tag: e953a22c-8439-4eb4-a686-faff4a48b417)
+    (value 20 ::int trace: 20 tag: 24f2d9f8-b851-479e-b112-c1ed9ed1a867))
+```

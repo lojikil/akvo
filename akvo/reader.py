@@ -412,6 +412,13 @@ class SExpressionReader(ExpressionReader):
             pass
         elif res.is_sym():
             pass
+        elif res.is_opar():
+            return self._parse_expression()
+
+        def _parse_expression(self):
+            lexes = Lexeme.all(self.src)
+            substate = 0
+            pass
 
 
 class DExpressionReader(ExpressionReader):
