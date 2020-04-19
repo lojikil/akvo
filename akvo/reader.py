@@ -146,6 +146,10 @@ class Lexeme(object):
     def is_end_of_line(self):
         return self.lexeme_type == 17
 
+    def __str__(self):
+        return "Lexeme('{0}', {1})".format(self.lexeme_value,
+                                           self.lexeme_type)
+
     @staticmethod
     def next(buf, curpos, skipcomments=True):
         # so, obviously we want this to be able
@@ -343,7 +347,11 @@ class Lexeme(object):
     def iter_next(buf):
         offset = 0
         while True:
+            if offset > len(buf):
+                raise StopIteration()
+
             res = Lexeme.next(buf, offset)
+
             if res.is_end_of_line():
                 raise StopIteration()
 

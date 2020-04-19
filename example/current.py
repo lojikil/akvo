@@ -238,3 +238,8 @@ while True:
     print("lexeme: {0}, type: {1}, offset: {2}, length: {3}".format(res.lexeme_value, res.lexeme_type, res.offset, res.length))
 
     pos = res.offset + res.length
+
+print("\nsrc string:", lsrc)
+lexes = Lexeme.all(lsrc)
+for lex in lexes:
+    print("lex:", lex)
