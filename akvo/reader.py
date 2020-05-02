@@ -403,9 +403,9 @@ class SExpressionReader(ExpressionReader):
             # handle such situations
             return ValueAST.new_integer(int(res.lexeme_value))
         elif res.is_hex():
-            pass
+            return ValueAST.new_integer(int(res.lexeme_value, base=16))
         elif res.is_oct():
-            pass
+            return ValueAST.new_integer(int(res.lexeme_value, base=8))
         elif res.is_float():
             pass
         elif res.is_char():
@@ -415,9 +415,12 @@ class SExpressionReader(ExpressionReader):
         elif res.is_opar():
             return self._parse_expression()
 
-        def _parse_expression(self):
-            lexes = Lexeme.all(self.src)
-            substate = 0
+    def _parse_expression(self):
+        lexes = Lexeme.all(self.src)
+        substate = 0
+        idx = 1
+
+        for idx in range(1, len(lexes)):
             pass
 
 
